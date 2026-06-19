@@ -867,82 +867,80 @@
 
 <!-- ── Navigation ────────────────────────────────────────────── -->
 <div id="nav">
-  <button class="nav-btn" id="btnPrev" onclick="moveSlide(-1)">← Zurück</button>
+  <button class="nav-btn" id="btnPrev">← Zurück</button>
   <div id="dots"></div>
   <span id="slide-counter">1 / 10</span>
-  <button class="nav-btn" id="btnNext" onclick="moveSlide(1)">Weiter →</button>
+  <button class="nav-btn" id="btnNext">Weiter →</button>
 </div>
 
 <!-- ── Charts & Navigation JS ────────────────────────────────── -->
 <script>
-const SLIDES = document.querySelectorAll('.slide');
-const TOTAL  = SLIDES.length;
-let current  = 0;
+/* ══ 1. NAVIGATION — no Chart.js dependency ══ */
+const SLIDES  = document.querySelectorAll('.slide');
+const TOTAL   = SLIDES.length;
+const dotsEl  = document.getElementById('dots');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const counter = document.getElementById('slide-counter');
+let current   = 0;
 let chartsInit = {};
 
-/* ── Colour tokens for Chart.js ── */
-const C = {
-  navy:   '#00205B',
-  blue:   '#004F9F',
-  sky:    '#0082CA',
-  amber:  '#F5A800',
-  green:  '#1DB87E',
-  red:    '#D63B3B',
-  mid:    '#DDE3EC',
-  muted:  '#6B7A8D',
-  white:  '#FFFFFF',
-};
-
-/* ── Shared Chart defaults ── */
-Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
-Chart.defaults.color        = C.muted;
-
-/* ── Dot nav ── */
-const dotsEl = document.getElementById('dots');
 for (let i = 0; i < TOTAL; i++) {
   const d = document.createElement('div');
   d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.onclick = () => goTo(i);
+  d.addEventListener('click', (function(n){ return function(){ goTo(n); }; })(i));
   dotsEl.appendChild(d);
 }
 
 function goTo(idx) {
   SLIDES[current].classList.remove('active');
   dotsEl.children[current].classList.remove('active');
-  current = idx;
+  current = Math.max(0, Math.min(TOTAL - 1, idx));
   SLIDES[current].classList.add('active');
   dotsEl.children[current].classList.add('active');
-  document.getElementById('slide-counter').textContent = (current+1) + ' / ' + TOTAL;
-  document.getElementById('btnPrev').disabled = current === 0;
-  document.getElementById('btnNext').disabled = current === TOTAL - 1;
+  counter.textContent = (current + 1) + ' / ' + TOTAL;
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === TOTAL - 1;
   initCharts(current);
 }
 
-function moveSlide(dir) { goTo(Math.max(0, Math.min(TOTAL-1, current + dir))); }
+btnPrev.addEventListener('click', function() { goTo(current - 1); });
+btnNext.addEventListener('click', function() { goTo(current + 1); });
+btnPrev.disabled = true;
 
-window.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); moveSlide(1); }
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); moveSlide(-1); }
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); goTo(current - 1); }
 });
-document.getElementById('btnPrev').disabled = true;
+
+/* ══ 2. CHART.JS — guarded; navigation above works even if this fails ══ */
+const C = {
+  navy:  '#00205B', blue:  '#004F9F', sky:   '#0082CA',
+  amber: '#F5A800', green: '#1DB87E', red:   '#D63B3B',
+  mid:   '#DDE3EC', muted: '#6B7A8D', white: '#FFFFFF',
+};
+
+try {
+  Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+  Chart.defaults.color = C.muted;
+} catch (_) {}
 
 /* ── Chart factories ── */
 function initCharts(idx) {
   if (chartsInit[idx]) return;
   chartsInit[idx] = true;
+  try { renderChart(idx); } catch(e) { console.warn('Chart error slide', idx, e); }
+}
 
+function renderChart(idx) {
   /* Slide 3 – Deploy Frequency & Uptime */
   if (idx === 2) {
     new Chart(document.getElementById('chartDeployFreq'), {
       type: 'bar',
       data: {
         labels: ['Jan','Feb','Mär','Apr','Mai','Jun'],
-        datasets: [{
-          label: 'Deployments/Woche',
-          data: [2.1, 2.4, 1.8, 3.0, 2.7, 3.5],
-          backgroundColor: C.sky,
-          borderRadius: 4,
-        }]
+        datasets: [{ label: 'Deployments/Woche', data: [2.1,2.4,1.8,3.0,2.7,3.5],
+          backgroundColor: C.sky, borderRadius: 4 }]
       },
       options: { responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false } },
@@ -953,16 +951,9 @@ function initCharts(idx) {
       type: 'line',
       data: {
         labels: ['Jan','Feb','Mär','Apr','Mai','Jun'],
-        datasets: [{
-          label: 'Verfügbarkeit %',
-          data: [99.6, 99.8, 99.2, 99.9, 99.8, 99.95],
-          borderColor: C.green,
-          backgroundColor: 'rgba(29,184,126,.12)',
-          borderWidth: 2.5,
-          pointBackgroundColor: C.green,
-          fill: true,
-          tension: .35,
-        }]
+        datasets: [{ label: 'Verfügbarkeit %', data: [99.6,99.8,99.2,99.9,99.8,99.95],
+          borderColor: C.green, backgroundColor: 'rgba(29,184,126,.12)',
+          borderWidth: 2.5, pointBackgroundColor: C.green, fill: true, tension: .35 }]
       },
       options: { responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false } },
@@ -973,17 +964,17 @@ function initCharts(idx) {
 
   /* Slide 4 – Burndown */
   if (idx === 3) {
-    const days = ['Tag 1','Tag 2','Tag 3','Tag 4','Tag 5','Tag 6','Tag 7','Tag 8','Tag 9','Tag 10'];
-    const ideal  = [150,135,120,105,90,75,60,45,30,0];
-    const actual = [150,148,136,118,100,84,65,42,20,8];
+    var days   = ['Tag 1','Tag 2','Tag 3','Tag 4','Tag 5','Tag 6','Tag 7','Tag 8','Tag 9','Tag 10'];
+    var ideal  = [150,135,120,105,90,75,60,45,30,0];
+    var actual = [150,148,136,118,100,84,65,42,20,8];
     new Chart(document.getElementById('chartBurndown'), {
       type: 'line',
       data: {
         labels: days,
         datasets: [
-          { label: 'Ideal', data: ideal, borderColor: C.mid, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, tension:0 },
-          { label: 'Actual', data: actual, borderColor: C.sky, backgroundColor:'rgba(0,130,202,.1)', borderWidth:2.5,
-            pointBackgroundColor: C.sky, fill:true, tension:.2 }
+          { label:'Ideal',  data:ideal,  borderColor:C.mid, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, tension:0 },
+          { label:'Actual', data:actual, borderColor:C.sky, backgroundColor:'rgba(0,130,202,.1)',
+            borderWidth:2.5, pointBackgroundColor:C.sky, fill:true, tension:.2 }
         ]
       },
       options: { responsive:true, maintainAspectRatio:false,
@@ -996,14 +987,14 @@ function initCharts(idx) {
 
   /* Slide 5 – Velocity */
   if (idx === 4) {
-    const sprints = ['S5','S6','S7','S8','S9','S10','S11','S12'];
+    var sprints = ['S5','S6','S7','S8','S9','S10','S11','S12'];
     new Chart(document.getElementById('chartVelocity'), {
       type: 'bar',
       data: {
         labels: sprints,
         datasets: [
-          { label: 'Committed', data:[130,125,140,120,135,145,124,150], backgroundColor:'rgba(0,79,159,.35)', borderRadius:3 },
-          { label: 'Delivered', data:[118,123,132,114,129,138,124,142], backgroundColor: C.blue, borderRadius:3 }
+          { label:'Committed', data:[130,125,140,120,135,145,124,150], backgroundColor:'rgba(0,79,159,.35)', borderRadius:3 },
+          { label:'Delivered',  data:[118,123,132,114,129,138,124,142], backgroundColor:C.blue, borderRadius:3 }
         ]
       },
       options: { responsive:true, maintainAspectRatio:false,
@@ -1015,13 +1006,9 @@ function initCharts(idx) {
       type: 'line',
       data: {
         labels: sprints,
-        datasets: [{
-          label: 'Ø 3-Sprint Velocity',
-          data: [null, null, 124, 123, 125, 127, 130, 135],
-          borderColor: C.amber,
-          backgroundColor: 'rgba(245,168,0,.15)',
-          borderWidth: 2.5, pointBackgroundColor: C.amber, fill: true, tension: .35
-        }]
+        datasets: [{ label:'Ø 3-Sprint Velocity', data:[null,null,124,123,125,127,130,135],
+          borderColor:C.amber, backgroundColor:'rgba(245,168,0,.15)',
+          borderWidth:2.5, pointBackgroundColor:C.amber, fill:true, tension:.35 }]
       },
       options: { responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false } },
@@ -1036,50 +1023,41 @@ function initCharts(idx) {
       type: 'bar',
       data: {
         labels: ['Offline Mode','SSO / IAM','Reporting v2','Performance','Push Notif.','i18n'],
-        datasets: [{
-          label: 'Fertiggestellt (%)',
-          data: [85, 60, 45, 20, 30, 10],
-          backgroundColor: [C.green, C.sky, C.blue, C.amber, C.blue, C.mid],
-          borderRadius: 4,
-        }]
+        datasets: [{ label:'Fertiggestellt (%)', data:[85,60,45,20,30,10],
+          backgroundColor:[C.green,C.sky,C.blue,C.amber,C.blue,C.mid], borderRadius:4 }]
       },
-      options: {
-        indexAxis: 'y',
-        responsive: true, maintainAspectRatio: false,
+      options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
         plugins:{ legend:{ display:false } },
-        scales:{ x:{ min:0, max:100, ticks:{ callback: v => v+'%' }, grid:{ color:C.mid } }, y:{ grid:{ display:false } } }
+        scales:{ x:{ min:0, max:100, ticks:{ callback:function(v){ return v+'%'; } }, grid:{ color:C.mid } },
+                 y:{ grid:{ display:false } } }
       }
     });
     new Chart(document.getElementById('chartStoryStatus'), {
       type: 'doughnut',
       data: {
         labels: ['Done','In Progress','Ready','Planned','Blocked'],
-        datasets:[{
-          data: [38, 12, 15, 27, 8],
-          backgroundColor: [C.green, C.sky, C.blue, C.mid, C.red],
-          borderWidth: 2, borderColor: '#F4F6F9',
-          hoverOffset: 6,
-        }]
+        datasets: [{ data:[38,12,15,27,8],
+          backgroundColor:[C.green,C.sky,C.blue,C.mid,C.red],
+          borderWidth:2, borderColor:'#F4F6F9', hoverOffset:6 }]
       },
-      options: { responsive:true, maintainAspectRatio:false,
-        cutout: '62%',
+      options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
         plugins:{ legend:{ position:'right', labels:{ usePointStyle:true, padding:14, boxWidth:10 } } }
       }
     });
   }
 
-  /* Slide 9 – Risk Bubble Chart */
+  /* Slide 9 – Risk Bubble */
   if (idx === 8) {
     new Chart(document.getElementById('chartRisk'), {
       type: 'bubble',
       data: {
         datasets: [
-          { label: 'DB-Blocker (US-253)', data:[{x:4,y:4,r:14}], backgroundColor:'rgba(214,59,59,.75)' },
-          { label: 'Kapazität Q3',        data:[{x:3,y:3,r:11}], backgroundColor:'rgba(245,168,0,.75)' },
-          { label: 'IAM API Break',       data:[{x:3,y:4,r:10}], backgroundColor:'rgba(245,168,0,.75)' },
-          { label: 'Test-Automatisierung',data:[{x:2,y:2,r:7}],  backgroundColor:'rgba(0,82,202,.65)' },
-          { label: 'Scope Creep',         data:[{x:2,y:3,r:8}],  backgroundColor:'rgba(0,82,202,.65)' },
-          { label: 'Dokumentation',       data:[{x:1,y:2,r:5}],  backgroundColor:'rgba(29,184,126,.65)' },
+          { label:'DB-Blocker (US-253)',    data:[{x:4,y:4,r:14}], backgroundColor:'rgba(214,59,59,.75)' },
+          { label:'Kapazität Q3',           data:[{x:3,y:3,r:11}], backgroundColor:'rgba(245,168,0,.75)' },
+          { label:'IAM API Break',          data:[{x:3,y:4,r:10}], backgroundColor:'rgba(245,168,0,.75)' },
+          { label:'Test-Automatisierung',   data:[{x:2,y:2,r:7}],  backgroundColor:'rgba(0,82,202,.65)' },
+          { label:'Scope Creep',            data:[{x:2,y:3,r:8}],  backgroundColor:'rgba(0,82,202,.65)' },
+          { label:'Dokumentation',          data:[{x:1,y:2,r:5}],  backgroundColor:'rgba(29,184,126,.65)' }
         ]
       },
       options: { responsive:true, maintainAspectRatio:false,
