@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "sprint": "Sprint 18",
+    "release": "Release 2.4",
+    "quarter": "Q2 2026",
+    "projectName": "Digital MRO Platform",
+    "presenter": "Max Mustermann",
+    "role": "Product Owner · Digital Solutions",
+    "email": "max.mustermann@lht.dlh.de",
+    "teams": "Max Mustermann"
+  },
+  "kpis": {
+    "storyPointsDone": 84,
+    "storyPointsTotal": 90,
+    "velocity": 78,
+    "doneRate": 93,
+    "openBugs": 12,
+    "velocityDelta": "+6",
+    "velocityTrend": "steigend",
+    "bugsDelta": "+3"
+  },
+  "velocityHistory": [
+    { "sprint": "S14", "points": 62 },
+    { "sprint": "S15", "points": 70 },
+    { "sprint": "S16", "points": 75 },
+    { "sprint": "S17", "points": 78 },
+    { "sprint": "S18", "points": 84 }
+  ],
+  "highlights": [
+    "API-Integration mit Mainframe abgeschlossen",
+    "User Acceptance Tests erfolgreich bestanden",
+    "Release-Deployment für Q3 eingeplant"
+  ]
+}
