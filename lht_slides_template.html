@@ -1,588 +1,736 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Lufthansa Technik – Product Review Template</title>
-<style>
-:root{
-  --n:#00205B;--b:#004F9F;--s:#0082CA;--a:#F5A800;
-  --g:#1DB87E;--r:#D63B3B;--w:#FFFFFF;--l:#F4F6F9;
-  --m:#DDE3EC;--t:#2C3E50;--u:#6B7A8D;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Segoe UI',Arial,sans-serif;background:#0A1628;
-  display:flex;flex-direction:column;align-items:center;
-  min-height:100vh;padding:24px 16px 40px;
-}
-#stage{position:relative;width:1280px;max-width:100%;aspect-ratio:16/9}
-.slide{
-  display:none;position:absolute;inset:0;background:var(--w);
-  overflow:hidden;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.55);
-  flex-direction:column;
-}
-#s1{display:flex}
-.slide:target{display:flex}
-body:has(.slide:target) #s1:not(:target){display:none}
-.ab{height:4px;background:linear-gradient(90deg,var(--a),var(--s));flex-shrink:0}
-.hd{background:var(--n);color:var(--w);padding:13px 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.hd h2{font-size:1.15rem;font-weight:700}
-.logo{display:flex;align-items:center;gap:8px}
-.lm{width:32px;height:32px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:var(--n)}
-.lt{font-size:.68rem;font-weight:600;letter-spacing:1px;opacity:.85}
-.bd{flex:1;display:flex;flex-direction:column;padding:18px 34px 12px;background:var(--l);overflow:hidden;min-height:0}
-.ft{background:var(--n);color:rgba(255,255,255,.45);font-size:.62rem;padding:0 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;height:38px}
-.fn{display:flex;align-items:center;gap:8px}
-.fb{display:inline-flex;align-items:center;padding:4px 13px;background:var(--b);color:var(--w);text-decoration:none;border-radius:3px;font-size:.68rem;font-weight:700;transition:background .15s}
-.fb:hover{background:var(--s)}
-.dots{display:flex;gap:4px}
-.d{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22);display:inline-block}
-.d.on{background:var(--a)}
-.cn{color:rgba(255,255,255,.38);font-size:.62rem}
-.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
-.kc{background:var(--w);border-radius:5px;padding:13px 15px;border-left:4px solid var(--a);box-shadow:0 1px 5px rgba(0,32,91,.08)}
-.kc.b{border-color:var(--b)}.kc.s{border-color:var(--s)}.kc.g{border-color:var(--g)}
-.ct{font-size:.68rem;font-weight:600;color:var(--u);margin-bottom:2px}
-.bn{font-size:1.9rem;font-weight:800;color:var(--n);line-height:1}
-.dl{display:inline-block;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:20px;margin-top:3px}
-.up{background:#E6F9F0;color:#1A8A56}.dn{background:#FEF0F0;color:var(--r)}.fl{background:#EFF3FB;color:var(--b)}
-.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0}
-.cb{background:var(--w);border-radius:5px;padding:12px;box-shadow:0 1px 5px rgba(0,32,91,.08);display:flex;flex-direction:column;flex:1;min-height:0}
-.cb svg{flex:1;display:block;width:100%;height:100%}
-.cl{font-size:.72rem;font-weight:700;color:var(--n);margin-bottom:7px;flex-shrink:0}
-table{width:100%;border-collapse:collapse;font-size:.72rem}
-thead tr{background:var(--n);color:var(--w)}
-thead th{padding:7px 9px;text-align:left;font-weight:600}
-tbody tr:nth-child(even){background:var(--m)}
-tbody td{padding:6px 9px;color:var(--t);border-bottom:1px solid var(--m)}
-.tg{display:inline-block;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:20px}
-.td{background:#D4F5E5;color:#1A8A56}.tw{background:#FFF3CD;color:#936A00}
-.tr{background:#E2EAFD;color:#1D4ED8}.tb{background:#FDE8E8;color:#C0392B}.tp{background:#F0F0F0;color:#555}
-.rr{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.rl{width:124px;font-size:.7rem;font-weight:600;color:var(--n);flex-shrink:0}
-.rt{flex:1;height:24px;background:var(--m);border-radius:3px;position:relative}
-.rb{position:absolute;top:0;bottom:0;border-radius:3px;display:flex;align-items:center;padding:0 6px;font-size:.62rem;font-weight:700;color:var(--w);white-space:nowrap}
-.rb.gn{background:var(--g)}.rb.sk{background:var(--s)}.rb.pl{background:var(--b);opacity:.5}
-.ql{display:flex;margin-left:133px;margin-bottom:2px}
-.ql span{flex:1;font-size:.6rem;font-weight:700;color:var(--u);letter-spacing:1px}
-.al{list-style:none;display:flex;flex-direction:column;gap:7px}
-.al li{display:flex;align-items:center;gap:11px;background:var(--w);border-radius:5px;padding:9px 13px;font-size:.8rem;color:var(--t);font-weight:500;box-shadow:0 1px 4px rgba(0,32,91,.06)}
-.an{width:24px;height:24px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.68rem;color:var(--n);flex-shrink:0}
-.sp{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
-.pi{background:var(--w);border:1.5px solid var(--m);border-radius:5px;padding:7px 11px}
-.pl2{font-size:.58rem;font-weight:700;color:var(--u);text-transform:uppercase;letter-spacing:1px}
-.pv{font-size:1rem;font-weight:800;color:var(--n);margin-top:1px}
-.rhi{background:#FEF0F0;border-left:4px solid var(--r);border-radius:4px;padding:8px 11px;margin-bottom:6px}
-.rmi{background:#FFF7E6;border-left:4px solid var(--a);border-radius:4px;padding:8px 11px;margin-bottom:6px}
-.ni{background:var(--w);border-left:4px solid var(--s);border-radius:4px;padding:8px 11px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,32,91,.06)}
-.ni.gn{border-color:var(--g)}
-.ri-t{font-size:.68rem;font-weight:700}
-.ri-b{font-size:.64rem;color:var(--t);margin-top:2px}
-.ni-t{font-size:.68rem;font-weight:700;color:var(--b)}
-#s1{background:linear-gradient(135deg,var(--n) 0%,#001840 60%,#0A2460 100%);justify-content:center;align-items:flex-start;padding:58px 78px}
-.dc1{position:absolute;right:-80px;top:-80px;width:450px;height:450px;border-radius:50%;border:68px solid rgba(245,168,0,.07)}
-.dc2{position:absolute;right:78px;bottom:-110px;width:290px;height:290px;border-radius:50%;border:52px solid rgba(0,130,202,.1)}
-.logo-tl{position:absolute;top:26px;right:36px;display:flex;align-items:center;gap:8px}
-.lm-lg{width:42px;height:42px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.95rem;color:var(--n)}
-.lt-lg{color:rgba(255,255,255,.72);font-size:.68rem;font-weight:600;letter-spacing:1.5px;line-height:1.3}
-#s1 .pt{font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--a);margin-bottom:11px}
-#s1 h1{font-size:2.5rem;font-weight:900;color:var(--w);line-height:1.1;max-width:640px;margin-bottom:14px}
-#s1 .su{font-size:.95rem;color:rgba(255,255,255,.62);margin-bottom:28px}
-.aln{width:54px;height:5px;background:var(--a);border-radius:3px;margin-bottom:18px}
-#s1 .me{display:flex;gap:24px;margin-bottom:32px}
-#s1 .mi .ml{font-size:.59rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a)}
-#s1 .mi .mv{font-size:.82rem;color:var(--w);margin-top:2px;font-weight:500}
-.s1nav{position:absolute;bottom:18px;right:34px}
-.s1nav .fb{font-size:.75rem;padding:6px 16px}
-#s10{background:linear-gradient(150deg,var(--n),#002878,var(--b));flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.qa-ic{width:68px;height:68px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:var(--n);font-weight:900;margin:0 auto 18px}
-#s10 h2{font-size:2.4rem;font-weight:900;color:var(--w);margin-bottom:9px}
-#s10 p{font-size:.95rem;color:rgba(255,255,255,.58);max-width:460px;margin-bottom:24px}
-.cts{display:flex;gap:26px;justify-content:center;margin-bottom:26px}
-.cts .cl2{font-size:.59rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a)}
-.cts .cv{font-size:.82rem;color:rgba(255,255,255,.78);margin-top:3px}
-.cts .cs{font-size:.67rem;color:rgba(255,255,255,.42)}
-.cts .sep{width:1px;background:rgba(255,255,255,.15)}
-.s10nav .fb{font-size:.75rem;padding:6px 16px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lufthansa Technik – Product Owner Template</title>
+
+    <!-- Fonts: Barlow Condensed (display) + IBM Plex Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* =======================================
+           CSS CUSTOM PROPERTIES — LHT Theme
+           ======================================= */
+        :root {
+            --lht-navy:  #00205B;
+            --lht-blue:  #004F9F;
+            --lht-sky:   #0082CA;
+            --lht-amber: #F5A800;
+            --lht-green: #1DB87E;
+            --lht-red:   #D63B3B;
+            --lht-white: #FFFFFF;
+            --lht-light: #F0F4FA;
+            --lht-muted: #8EA3C3;
+
+            --slide-bg: var(--lht-navy);
+            --stage-bg: #000;
+
+            --font-display: 'Barlow Condensed', sans-serif;
+            --font-body:    'IBM Plex Sans', sans-serif;
+
+            --pad: 80px;
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --dur: 0.65s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* =============================================
+           VIEWPORT BASE — viewport-base.css (verbatim)
+           ============================================= */
+        html, body {
+            width: 100%; height: 100%;
+            margin: 0; overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+        .deck-viewport {
+            position: fixed; inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg, #000);
+        }
+        .deck-stage {
+            position: absolute; left: 0; top: 0;
+            width: 1920px; height: 1080px;
+            overflow: hidden; transform-origin: 0 0;
+            background: var(--slide-bg, #fff);
+        }
+        .slide {
+            position: absolute; inset: 0;
+            width: 1920px; height: 1080px;
+            overflow: hidden; display: block;
+            visibility: hidden; opacity: 0;
+            pointer-events: none;
+            background: var(--slide-bg, #fff);
+        }
+        .slide.active, .slide.visible {
+            visibility: visible; opacity: 1;
+            pointer-events: auto; z-index: 1;
+        }
+        img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+        .deck-controls {
+            position: fixed; left: 50%; bottom: 22px;
+            transform: translateX(-50%); z-index: 1000;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+        @media print {
+            html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+            .deck-viewport { position: static; overflow: visible; background: #fff; }
+            .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+            .slide { position: relative; display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
+            .slide:last-child { break-after: auto; page-break-after: auto; }
+            .deck-controls { display: none !important; }
+        }
+
+        /* =======================================
+           REVEAL ANIMATIONS
+           ======================================= */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .slide.visible .reveal         { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1)           { transition-delay: 0.08s; }
+        .reveal:nth-child(2)           { transition-delay: 0.18s; }
+        .reveal:nth-child(3)           { transition-delay: 0.28s; }
+        .reveal:nth-child(4)           { transition-delay: 0.38s; }
+        .reveal:nth-child(5)           { transition-delay: 0.48s; }
+        .reveal:nth-child(6)           { transition-delay: 0.58s; }
+        .reveal-scale {
+            opacity: 0; transform: scale(0.88);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .slide.visible .reveal-scale   { opacity: 1; transform: scale(1); }
+
+        /* =======================================
+           SLIDE 1 — TITLE
+           ======================================= */
+        #slide-1 { background: var(--lht-navy); display: flex; flex-direction: column; }
+
+        .s1-amber-stripe { height: 10px; background: var(--lht-amber); flex-shrink: 0; }
+
+        .s1-body { flex: 1; display: flex; align-items: stretch; }
+
+        .s1-left {
+            flex: 0 0 920px;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: var(--pad) 90px var(--pad) var(--pad);
+            position: relative;
+        }
+        .s1-left::after {
+            content: ''; position: absolute; right: 0; top: 80px; bottom: 80px;
+            width: 3px; background: var(--lht-amber); opacity: 0.4;
+        }
+
+        .s1-eyebrow {
+            font-family: var(--font-body); font-size: 22px; font-weight: 500;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--lht-amber); margin-bottom: 28px;
+        }
+        .s1-title {
+            font-family: var(--font-display); font-size: 128px; font-weight: 800;
+            line-height: 0.92; color: var(--lht-white); text-transform: uppercase;
+            letter-spacing: -0.01em; margin-bottom: 40px;
+        }
+        .s1-title em { font-style: normal; color: var(--lht-amber); }
+        .s1-subtitle {
+            font-family: var(--font-body); font-size: 36px; font-weight: 300;
+            color: var(--lht-muted); line-height: 1.45;
+        }
+        .s1-meta {
+            margin-top: 60px; display: flex; gap: 36px; align-items: center;
+        }
+        .s1-meta-item { font-family: var(--font-body); font-size: 24px; color: var(--lht-muted); }
+        .s1-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--lht-muted); opacity: 0.5; }
+
+        .s1-right { flex: 1; position: relative; overflow: hidden; background: var(--lht-blue); }
+        .s1-right::before {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .s1-bg-lht {
+            position: absolute; bottom: -60px; right: -30px;
+            font-family: var(--font-display); font-size: 500px; font-weight: 800;
+            color: rgba(255,255,255,0.04); line-height: 1; letter-spacing: -0.05em;
+            user-select: none; pointer-events: none;
+        }
+        .s1-circle {
+            position: absolute; border-radius: 50%;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .s1-circle-1 { width: 400px; height: 400px; border: 2px solid rgba(245,168,0,0.2); }
+        .s1-circle-2 { width: 240px; height: 240px; border: 1px solid rgba(0,130,202,0.4); }
+        .s1-brand {
+            position: absolute; top: var(--pad); right: var(--pad);
+            display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+        }
+        .s1-brand-name {
+            font-family: var(--font-display); font-size: 30px; font-weight: 700;
+            letter-spacing: 0.1em; color: var(--lht-white);
+        }
+        .s1-brand-sub {
+            font-family: var(--font-body); font-size: 19px;
+            color: var(--lht-muted); letter-spacing: 0.05em;
+        }
+
+        /* =======================================
+           SLIDE 2 — KPI DASHBOARD
+           ======================================= */
+        #slide-2 { background: var(--lht-light); }
+
+        .s2-layout {
+            width: 100%; height: 100%;
+            display: grid; grid-template-rows: 120px 1fr;
+        }
+        .s2-topbar {
+            background: var(--lht-navy);
+            display: flex; align-items: center;
+            padding: 0 var(--pad); gap: 28px;
+            border-bottom: 6px solid var(--lht-amber);
+        }
+        .s2-topbar-title {
+            font-family: var(--font-display); font-size: 52px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em; color: var(--lht-white);
+        }
+        .s2-chip {
+            background: var(--lht-amber); color: var(--lht-navy);
+            font-family: var(--font-body); font-size: 22px; font-weight: 600;
+            padding: 8px 24px; border-radius: 100px; letter-spacing: 0.04em;
+        }
+        .s2-slide-num {
+            margin-left: auto; font-family: var(--font-body); font-size: 22px; color: var(--lht-muted);
+        }
+
+        .s2-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 24px; padding: 28px var(--pad) 32px;
+        }
+
+        .kpi-card {
+            background: #fff; border-radius: 12px;
+            padding: 36px 40px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 2px 16px rgba(0,32,91,0.07);
+            border-left: 5px solid transparent;
+        }
+        .kpi-card.amber { border-left-color: var(--lht-amber); }
+        .kpi-card.sky   { border-left-color: var(--lht-sky); }
+        .kpi-card.green { border-left-color: var(--lht-green); }
+        .kpi-card.red   { border-left-color: var(--lht-red); }
+        .kpi-card.chart { border-left-color: var(--lht-navy); grid-row: 1 / span 2; }
+
+        .kpi-label {
+            font-family: var(--font-body); font-size: 21px; font-weight: 500;
+            color: #5a7a9a; letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .kpi-value {
+            font-family: var(--font-display); font-size: 80px; font-weight: 800;
+            color: var(--lht-navy); line-height: 1; letter-spacing: -0.02em;
+        }
+        .kpi-value sub {
+            font-size: 36px; font-weight: 400; color: var(--lht-muted);
+            vertical-align: baseline; margin-left: 6px;
+        }
+        .kpi-delta { font-family: var(--font-body); font-size: 22px; font-weight: 500; color: var(--lht-green); }
+        .kpi-delta.down { color: var(--lht-red); }
+
+        .chart-title {
+            font-family: var(--font-display); font-size: 28px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em; color: var(--lht-navy);
+            margin-bottom: 12px;
+        }
+        .chart-wrap { flex: 1; display: flex; align-items: flex-end; }
+
+        /* =======================================
+           SLIDE 3 — Q&A / CLOSING
+           ======================================= */
+        #slide-3 { background: var(--lht-navy); }
+
+        .s3-layout { width: 100%; height: 100%; display: flex; }
+
+        .s3-left {
+            flex: 0 0 680px;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: var(--pad) 80px;
+            border-right: 6px solid var(--lht-amber);
+            position: relative; overflow: hidden;
+        }
+        .s3-left::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 10px; background: var(--lht-amber);
+        }
+        .s3-bg-q {
+            position: absolute; bottom: -30px; right: -20px;
+            font-family: var(--font-display); font-size: 320px; font-weight: 800;
+            color: rgba(245,168,0,0.1); line-height: 1;
+            user-select: none; pointer-events: none;
+        }
+
+        .s3-tag {
+            font-family: var(--font-body); font-size: 22px; font-weight: 500;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--lht-amber); margin-bottom: 32px; position: relative;
+        }
+        .s3-heading {
+            font-family: var(--font-display); font-size: 100px; font-weight: 800;
+            text-transform: uppercase; line-height: 0.92;
+            color: var(--lht-white); position: relative;
+        }
+
+        .s3-right {
+            flex: 1; background: var(--lht-blue);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: var(--pad) 90px; position: relative; overflow: hidden;
+        }
+        .s3-right::before {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .s3-contact-label {
+            font-family: var(--font-body); font-size: 22px; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--lht-muted); margin-bottom: 16px; position: relative;
+        }
+        .s3-name {
+            font-family: var(--font-display); font-size: 64px; font-weight: 700;
+            color: var(--lht-white); margin-bottom: 10px; position: relative;
+        }
+        .s3-role {
+            font-family: var(--font-body); font-size: 30px; font-weight: 300;
+            color: var(--lht-muted); margin-bottom: 50px; position: relative;
+        }
+        .s3-divider {
+            width: 60px; height: 3px; background: var(--lht-amber);
+            margin-bottom: 50px; position: relative;
+        }
+
+        .s3-list { list-style: none; display: flex; flex-direction: column; gap: 22px; position: relative; }
+        .s3-list li {
+            display: flex; align-items: center; gap: 20px;
+            font-family: var(--font-body); font-size: 26px; color: var(--lht-light);
+        }
+        .s3-icon {
+            width: 44px; height: 44px; border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px; flex-shrink: 0;
+        }
+
+        .s3-brand {
+            position: absolute; bottom: var(--pad); right: var(--pad);
+            text-align: right; position: absolute;
+        }
+        .s3-brand-name {
+            font-family: var(--font-display); font-size: 26px; font-weight: 700;
+            letter-spacing: 0.1em; color: var(--lht-white);
+        }
+        .s3-brand-sub {
+            font-family: var(--font-body); font-size: 17px;
+            color: var(--lht-muted);
+        }
+
+        /* =======================================
+           PROGRESS DOTS
+           ======================================= */
+        .deck-controls { display: flex; align-items: center; gap: 12px; }
+
+        .progress-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            border: none; cursor: pointer; padding: 0;
+            transition: background 0.25s, transform 0.25s;
+        }
+        .progress-dot.active {
+            background: var(--lht-amber);
+            transform: scale(1.4);
+        }
+
+        /* =======================================
+           INLINE EDITOR CONTROLS
+           ======================================= */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 18px; left: 18px;
+            z-index: 10001;
+            background: rgba(0,32,91,0.9);
+            border: 1px solid rgba(245,168,0,0.45);
+            color: #fff; font-size: 18px;
+            padding: 9px 18px; border-radius: 8px;
+            cursor: pointer; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+            font-family: var(--font-body);
+            backdrop-filter: blur(8px);
+        }
+        .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+        [contenteditable="true"] {
+            outline: 2px dashed rgba(245,168,0,0.65);
+            outline-offset: 4px; cursor: text; border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-<div id="stage">
 
-<!-- SLIDE 1 -->
-<section class="slide" id="s1">
-  <div class="dc1"></div><div class="dc2"></div>
-  <div class="logo-tl"><div class="lm-lg">LHT</div><div class="lt-lg">LUFTHANSA<br>TECHNIK</div></div>
-  <div class="aln"></div>
-  <div class="pt">Product Review &amp; Sprint Report</div>
-  <h1>MyApp – Q2 2026 Review</h1>
-  <div class="su">Status, Metriken &amp; Roadmap für das Management</div>
-  <div class="me">
-    <div class="mi"><div class="ml">Datum</div><div class="mv">19. Juni 2026</div></div>
-    <div class="mi"><div class="ml">Product Owner</div><div class="mv">Max Mustermann</div></div>
-    <div class="mi"><div class="ml">Version</div><div class="mv">v2.4</div></div>
-    <div class="mi"><div class="ml">Team</div><div class="mv">MRO Digital Solutions</div></div>
-  </div>
-  <div class="s1nav"><a href="#s2" class="fb">Weiter →</a></div>
-</section>
+<div class="deck-viewport">
+    <main class="deck-stage" id="deckStage">
 
-<!-- SLIDE 2 – AGENDA -->
-<section class="slide" id="s2">
-  <div class="ab"></div>
-  <div class="hd"><h2>Agenda</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <ul class="al">
-      <li><div class="an">01</div>Executive Summary – KPIs auf einen Blick</li>
-      <li><div class="an">02</div>Sprint Burndown &amp; Team Velocity</li>
-      <li><div class="an">03</div>Feature Completion &amp; Release-Fortschritt</li>
-      <li><div class="an">04</div>User Story Backlog – Status-Übersicht</li>
-      <li><div class="an">05</div>Produkt-Roadmap Q2–Q4 2026</li>
-      <li><div class="an">06</div>Risiken, Abhängigkeiten &amp; Nächste Schritte</li>
-      <li><div class="an">07</div>Q &amp; A</li>
-    </ul>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s1" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">2/10</span><a href="#s3" class="fb">Weiter →</a></div>
-    <span>MRO Digital Solutions</span>
-  </div>
-</section>
+        <!-- =======================
+             SLIDE 1 — TITLE
+             ======================= -->
+        <section class="slide" id="slide-1" aria-label="Titelfolie">
+            <div class="s1-amber-stripe"></div>
+            <div class="s1-body">
 
-<!-- SLIDE 3 – KPI DASHBOARD -->
-<section class="slide" id="s3">
-  <div class="ab"></div>
-  <div class="hd"><h2>Executive Summary – KPIs auf einen Blick</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div class="kg">
-      <div class="kc"><div class="ct">Story Points geliefert</div><div class="bn">142</div><div class="dl up">▲ +18 vs. S11</div></div>
-      <div class="kc b"><div class="ct">Active Users (MAU)</div><div class="bn">2 847</div><div class="dl up">▲ +12 %</div></div>
-      <div class="kc s"><div class="ct">Ø Page Load Time</div><div class="bn">1.4 s</div><div class="dl dn">▼ −0.3 s</div></div>
-      <div class="kc g"><div class="ct">Bug-Backlog</div><div class="bn">7</div><div class="dl fl">3 P1 · 4 P2</div></div>
-    </div>
-    <div class="tc">
-      <div class="cb">
-        <div class="cl">Ø Deployment Frequency (pro Woche)</div>
-        <svg viewBox="0 0 380 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="28" y1="10" x2="28" y2="100" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="28" y1="100" x2="375" y2="100" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="28" y1="77" x2="375" y2="77" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <line x1="28" y1="55" x2="375" y2="55" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <line x1="28" y1="32" x2="375" y2="32" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <text x="24" y="103" text-anchor="end" font-size="8" fill="#6B7A8D">0</text>
-          <text x="24" y="80"  text-anchor="end" font-size="8" fill="#6B7A8D">1</text>
-          <text x="24" y="58"  text-anchor="end" font-size="8" fill="#6B7A8D">2</text>
-          <text x="24" y="35"  text-anchor="end" font-size="8" fill="#6B7A8D">3</text>
-          <rect x="34"  y="53" width="38" height="47" fill="#0082CA" rx="2"/>
-          <rect x="92"  y="46" width="38" height="54" fill="#0082CA" rx="2"/>
-          <rect x="150" y="59" width="38" height="41" fill="#0082CA" rx="2"/>
-          <rect x="208" y="33" width="38" height="67" fill="#0082CA" rx="2"/>
-          <rect x="266" y="40" width="38" height="60" fill="#0082CA" rx="2"/>
-          <rect x="324" y="21" width="38" height="79" fill="#F5A800" rx="2"/>
-          <text x="53"  y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jan</text>
-          <text x="111" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Feb</text>
-          <text x="169" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mär</text>
-          <text x="227" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Apr</text>
-          <text x="285" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mai</text>
-          <text x="343" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jun</text>
-        </svg>
-      </div>
-      <div class="cb">
-        <div class="cl">System-Verfügbarkeit (%)</div>
-        <svg viewBox="0 0 380 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="38" y1="10" x2="38" y2="100" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="38" y1="100" x2="375" y2="100" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="38" y1="70" x2="375" y2="70" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <line x1="38" y1="40" x2="375" y2="40" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <text x="34" y="103" text-anchor="end" font-size="7" fill="#6B7A8D">98.5</text>
-          <text x="34" y="73"  text-anchor="end" font-size="7" fill="#6B7A8D">99.5</text>
-          <text x="34" y="13"  text-anchor="end" font-size="7" fill="#6B7A8D">100</text>
-          <polygon points="50,34 110,22 190,58 250,16 320,22 370,19 370,100 50,100" fill="rgba(29,184,126,.12)"/>
-          <polyline points="50,34 110,22 190,58 250,16 320,22 370,19" fill="none" stroke="#1DB87E" stroke-width="2.5" stroke-linejoin="round"/>
-          <circle cx="50"  cy="34" r="3.5" fill="#1DB87E"/>
-          <circle cx="110" cy="22" r="3.5" fill="#1DB87E"/>
-          <circle cx="190" cy="58" r="3.5" fill="#1DB87E"/>
-          <circle cx="250" cy="16" r="3.5" fill="#1DB87E"/>
-          <circle cx="320" cy="22" r="3.5" fill="#1DB87E"/>
-          <circle cx="370" cy="19" r="3.5" fill="#1DB87E"/>
-          <text x="50"  y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jan</text>
-          <text x="110" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Feb</text>
-          <text x="190" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mär</text>
-          <text x="250" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Apr</text>
-          <text x="320" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mai</text>
-          <text x="370" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jun</text>
-        </svg>
-      </div>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s2" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">3/10</span><a href="#s4" class="fb">Weiter →</a></div>
-    <span>Sprint 12 · Juni 2026</span>
-  </div>
-</section>
+                <div class="s1-left">
+                    <p class="s1-eyebrow reveal">Product Owner &middot; Sprint Review</p>
+                    <h1 class="s1-title reveal">Product<br><em>Status</em><br>Report</h1>
+                    <p class="s1-subtitle reveal">Projektname &middot; Release 2.4</p>
+                    <div class="s1-meta reveal">
+                        <span class="s1-meta-item">Max Mustermann</span>
+                        <span class="s1-dot"></span>
+                        <span class="s1-meta-item">Q2 2026</span>
+                        <span class="s1-dot"></span>
+                        <span class="s1-meta-item">Sprint 18</span>
+                    </div>
+                </div>
 
-<!-- SLIDE 4 – BURNDOWN -->
-<section class="slide" id="s4">
-  <div class="ab"></div>
-  <div class="hd"><h2>Sprint Burndown – Sprint 12</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div class="sp">
-      <div class="pi"><div class="pl2">Sprint</div><div class="pv">#12</div></div>
-      <div class="pi"><div class="pl2">Start</div><div class="pv">02.06.</div></div>
-      <div class="pi"><div class="pl2">Ende</div><div class="pv">13.06.</div></div>
-      <div class="pi"><div class="pl2">Capacity</div><div class="pv">160 SP</div></div>
-      <div class="pi"><div class="pl2">Committed</div><div class="pv">150 SP</div></div>
-      <div class="pi"><div class="pl2">Delivered</div><div class="pv" style="color:#1DB87E">142 SP</div></div>
-    </div>
-    <div class="cb" style="flex:1">
-      <div class="cl">Remaining Story Points über Sprint-Tage</div>
-      <svg viewBox="0 0 560 155" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="42" y1="10" x2="42" y2="133" stroke="#DDE3EC" stroke-width="1"/>
-        <line x1="42" y1="133" x2="545" y2="133" stroke="#DDE3EC" stroke-width="1"/>
-        <line x1="42" y1="100" x2="545" y2="100" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
-        <line x1="42" y1="67"  x2="545" y2="67"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
-        <line x1="42" y1="34"  x2="545" y2="34"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
-        <text x="38" y="136" text-anchor="end" font-size="9" fill="#6B7A8D">0</text>
-        <text x="38" y="103" text-anchor="end" font-size="9" fill="#6B7A8D">50</text>
-        <text x="38" y="70"  text-anchor="end" font-size="9" fill="#6B7A8D">100</text>
-        <text x="38" y="37"  text-anchor="end" font-size="9" fill="#6B7A8D">150</text>
-        <polyline points="55,10 105,24 155,38 205,52 255,67 305,81 355,95 405,109 455,123 505,133" fill="none" stroke="#DDE3EC" stroke-width="2" stroke-dasharray="6,4"/>
-        <polygon points="55,10 105,12 155,21 205,37 255,52 305,66 355,82 405,100 455,118 505,126 505,133 55,133" fill="rgba(0,130,202,.1)"/>
-        <polyline points="55,10 105,12 155,21 205,37 255,52 305,66 355,82 405,100 455,118 505,126" fill="none" stroke="#0082CA" stroke-width="2.5" stroke-linejoin="round"/>
-        <circle cx="55"  cy="10"  r="3.5" fill="#0082CA"/>
-        <circle cx="105" cy="12"  r="3.5" fill="#0082CA"/>
-        <circle cx="155" cy="21"  r="3.5" fill="#0082CA"/>
-        <circle cx="205" cy="37"  r="3.5" fill="#0082CA"/>
-        <circle cx="255" cy="52"  r="3.5" fill="#0082CA"/>
-        <circle cx="305" cy="66"  r="3.5" fill="#0082CA"/>
-        <circle cx="355" cy="82"  r="3.5" fill="#0082CA"/>
-        <circle cx="405" cy="100" r="3.5" fill="#0082CA"/>
-        <circle cx="455" cy="118" r="3.5" fill="#0082CA"/>
-        <circle cx="505" cy="126" r="3.5" fill="#0082CA"/>
-        <text x="55"  y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T1</text>
-        <text x="105" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T2</text>
-        <text x="155" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T3</text>
-        <text x="205" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T4</text>
-        <text x="255" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T5</text>
-        <text x="305" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T6</text>
-        <text x="355" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T7</text>
-        <text x="405" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T8</text>
-        <text x="455" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T9</text>
-        <text x="505" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T10</text>
-        <line x1="60" y1="152" x2="80" y2="152" stroke="#DDE3EC" stroke-width="2" stroke-dasharray="4,3"/>
-        <text x="83" y="155" font-size="8" fill="#6B7A8D">Ideal</text>
-        <line x1="120" y1="152" x2="140" y2="152" stroke="#0082CA" stroke-width="2.5"/>
-        <text x="143" y="155" font-size="8" fill="#6B7A8D">Actual</text>
-      </svg>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s3" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">4/10</span><a href="#s5" class="fb">Weiter →</a></div>
-    <span>02.06. – 13.06.2026</span>
-  </div>
-</section>
+                <div class="s1-right">
+                    <div class="s1-bg-lht reveal-scale">LHT</div>
+                    <div class="s1-circle s1-circle-1 reveal-scale"></div>
+                    <div class="s1-circle s1-circle-2 reveal-scale"></div>
+                    <div class="s1-brand reveal">
+                        <span class="s1-brand-name">LUFTHANSA TECHNIK</span>
+                        <span class="s1-brand-sub">Engineering Excellence</span>
+                    </div>
+                </div>
 
-<!-- SLIDE 5 – VELOCITY -->
-<section class="slide" id="s5">
-  <div class="ab"></div>
-  <div class="hd"><h2>Team Velocity – Letzte 8 Sprints</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div class="tc">
-      <div class="cb">
-        <div class="cl">Committed vs. Delivered Story Points</div>
-        <svg viewBox="0 0 480 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="30" y1="10" x2="30" y2="128" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="30" y1="128" x2="475" y2="128" stroke="#DDE3EC" stroke-width="1"/>
-          <line x1="30" y1="95" x2="475" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <line x1="30" y1="62" x2="475" y2="62" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <line x1="30" y1="29" x2="475" y2="29" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-          <text x="26" y="131" text-anchor="end" font-size="8" fill="#6B7A8D">0</text>
-          <text x="26" y="98"  text-anchor="end" font-size="8" fill="#6B7A8D">50</text>
-          <text x="26" y="65"  text-anchor="end" font-size="8" fill="#6B7A8D">100</text>
-          <text x="26" y="32"  text-anchor="end" font-size="8" fill="#6B7A8D">150</text>
-          <rect x="34"  y="32" width="20" height="96" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="56"  y="41" width="20" height="87" fill="#004F9F" rx="2"/>
-          <rect x="89"  y="35" width="20" height="93" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="111" y="37" width="20" height="91" fill="#004F9F" rx="2"/>
-          <rect x="144" y="24" width="20" height="104" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="166" y="30" width="20" height="98"  fill="#004F9F" rx="2"/>
-          <rect x="199" y="39" width="20" height="89" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="221" y="43" width="20" height="85" fill="#004F9F" rx="2"/>
-          <rect x="254" y="28" width="20" height="100" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="276" y="32" width="20" height="96"  fill="#004F9F" rx="2"/>
-          <rect x="309" y="21" width="20" height="107" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="331" y="26" width="20" height="102" fill="#004F9F" rx="2"/>
-          <rect x="364" y="36" width="20" height="92" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="386" y="36" width="20" height="92" fill="#004F9F" rx="2"/>
-          <rect x="419" y="17" width="20" height="111" fill="rgba(0,79,159,.35)" rx="2"/>
-          <rect x="441" y="23" width="20" height="105" fill="#004F9F" rx="2"/>
-          <text x="47"  y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S5</text>
-          <text x="102" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S6</text>
-          <text x="157" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S7</text>
-          <text x="212" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S8</text>
-          <text x="267" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S9</text>
-          <text x="322" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S10</text>
-          <text x="377" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S11</text>
-          <text x="432" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S12</text>
-          <rect x="34" y="146" width="11" height="7" fill="rgba(0,79,159,.35)" rx="1"/>
-          <text x="49" y="153" font-size="8" fill="#6B7A8D">Committed</text>
-          <rect x="120" y="146" width="11" height="7" fill="#004F9F" rx="1"/>
-          <text x="135" y="153" font-size="8" fill="#6B7A8D">Delivered</text>
-        </svg>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:11px">
-        <div class="cb" style="flex:1">
-          <div class="cl">Velocity-Trend (Ø 3 Sprints)</div>
-          <svg viewBox="0 0 300 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="28" y1="8" x2="28" y2="90" stroke="#DDE3EC" stroke-width="1"/>
-            <line x1="28" y1="90" x2="292" y2="90" stroke="#DDE3EC" stroke-width="1"/>
-            <line x1="28" y1="62" x2="292" y2="62" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-            <line x1="28" y1="34" x2="292" y2="34" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-            <text x="24" y="93" text-anchor="end" font-size="7" fill="#6B7A8D">110</text>
-            <text x="24" y="65" text-anchor="end" font-size="7" fill="#6B7A8D">120</text>
-            <text x="24" y="37" text-anchor="end" font-size="7" fill="#6B7A8D">130</text>
-            <text x="24" y="11" text-anchor="end" font-size="7" fill="#6B7A8D">140</text>
-            <polygon points="102,45 136,47 170,42 204,37 238,28 272,14 272,90 102,90" fill="rgba(245,168,0,.15)"/>
-            <polyline points="102,45 136,47 170,42 204,37 238,28 272,14" fill="none" stroke="#F5A800" stroke-width="2.5" stroke-linejoin="round"/>
-            <circle cx="102" cy="45" r="3" fill="#F5A800"/>
-            <circle cx="136" cy="47" r="3" fill="#F5A800"/>
-            <circle cx="170" cy="42" r="3" fill="#F5A800"/>
-            <circle cx="204" cy="37" r="3" fill="#F5A800"/>
-            <circle cx="238" cy="28" r="3" fill="#F5A800"/>
-            <circle cx="272" cy="14" r="3" fill="#F5A800"/>
-            <text x="34"  y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S5</text>
-            <text x="68"  y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S6</text>
-            <text x="102" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S7</text>
-            <text x="136" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S8</text>
-            <text x="170" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S9</text>
-            <text x="204" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S10</text>
-            <text x="238" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S11</text>
-            <text x="272" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S12</text>
-          </svg>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="kc b" style="padding:11px 13px"><div class="ct">Ø Velocity</div><div class="bn" style="font-size:1.5rem">131</div><div class="dl fl">SP / Sprint</div></div>
-          <div class="kc"   style="padding:11px 13px"><div class="ct">Predictability</div><div class="bn" style="font-size:1.5rem">94 %</div><div class="dl up">▲ Ziel: 90 %</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s4" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">5/10</span><a href="#s6" class="fb">Weiter →</a></div>
-    <span>Sprint 5–12 · 2026</span>
-  </div>
-</section>
+            </div>
+        </section>
 
-<!-- SLIDE 6 – FEATURE COMPLETION -->
-<section class="slide" id="s6">
-  <div class="ab"></div>
-  <div class="hd"><h2>Feature Completion – Release 2.4</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div class="tc">
-      <div class="cb">
-        <div class="cl">Fertigstellungsgrad je Epic (%)</div>
-        <svg viewBox="0 0 400 170" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="115" y="12"  width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="40"  width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="68"  width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="96"  width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="124" width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="152" width="270" height="22" fill="#DDE3EC" rx="2"/>
-          <rect x="115" y="12"  width="230" height="22" fill="#1DB87E" rx="2"/>
-          <rect x="115" y="40"  width="162" height="22" fill="#0082CA" rx="2"/>
-          <rect x="115" y="68"  width="122" height="22" fill="#004F9F" rx="2"/>
-          <rect x="115" y="96"  width="54"  height="22" fill="#F5A800" rx="2"/>
-          <rect x="115" y="124" width="81"  height="22" fill="#004F9F" rx="2"/>
-          <rect x="115" y="152" width="27"  height="22" fill="#6B7A8D" rx="2"/>
-          <text x="350" y="27"  font-size="9" fill="#fff" font-weight="700">85 %</text>
-          <text x="282" y="55"  font-size="9" fill="#fff" font-weight="700">60 %</text>
-          <text x="242" y="83"  font-size="9" fill="#fff" font-weight="700">45 %</text>
-          <text x="147" y="111" font-size="9" fill="#fff" font-weight="700">20 %</text>
-          <text x="163" y="139" font-size="9" fill="#fff" font-weight="700">30 %</text>
-          <text x="146" y="167" font-size="9" fill="#fff" font-weight="700">10 %</text>
-          <text x="111" y="27"  text-anchor="end" font-size="8.5" fill="#2C3E50">Offline Mode</text>
-          <text x="111" y="55"  text-anchor="end" font-size="8.5" fill="#2C3E50">SSO / IAM</text>
-          <text x="111" y="83"  text-anchor="end" font-size="8.5" fill="#2C3E50">Reporting v2</text>
-          <text x="111" y="111" text-anchor="end" font-size="8.5" fill="#2C3E50">Performance</text>
-          <text x="111" y="139" text-anchor="end" font-size="8.5" fill="#2C3E50">Push Notif.</text>
-          <text x="111" y="167" text-anchor="end" font-size="8.5" fill="#2C3E50">i18n</text>
-        </svg>
-      </div>
-      <div class="cb">
-        <div class="cl">Story-Status-Verteilung</div>
-        <svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="95" cy="85" r="62" fill="none" stroke="#1DB87E" stroke-width="38" stroke-dasharray="148 242" transform="rotate(-90 95 85)"/>
-          <circle cx="95" cy="85" r="62" fill="none" stroke="#0082CA" stroke-width="38" stroke-dasharray="47 343"  transform="rotate(46.8 95 85)"/>
-          <circle cx="95" cy="85" r="62" fill="none" stroke="#004F9F" stroke-width="38" stroke-dasharray="58 332"  transform="rotate(90 95 85)"/>
-          <circle cx="95" cy="85" r="62" fill="none" stroke="#DDE3EC" stroke-width="38" stroke-dasharray="105 285" transform="rotate(144 95 85)"/>
-          <circle cx="95" cy="85" r="62" fill="none" stroke="#D63B3B" stroke-width="38" stroke-dasharray="31 359"  transform="rotate(241.2 95 85)"/>
-          <circle cx="95" cy="85" r="32" fill="#FFFFFF"/>
-          <text x="95" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#00205B">100</text>
-          <text x="95" y="95" text-anchor="middle" font-size="8"  fill="#6B7A8D">Stories</text>
-          <rect x="182" y="28"  width="11" height="11" fill="#1DB87E" rx="2"/>
-          <text x="197" y="38"  font-size="9" fill="#2C3E50">Done (38)</text>
-          <rect x="182" y="48"  width="11" height="11" fill="#0082CA" rx="2"/>
-          <text x="197" y="58"  font-size="9" fill="#2C3E50">In Progress (12)</text>
-          <rect x="182" y="68"  width="11" height="11" fill="#004F9F" rx="2"/>
-          <text x="197" y="78"  font-size="9" fill="#2C3E50">Ready (15)</text>
-          <rect x="182" y="88"  width="11" height="11" fill="#DDE3EC" rx="2"/>
-          <text x="197" y="98"  font-size="9" fill="#2C3E50">Planned (27)</text>
-          <rect x="182" y="108" width="11" height="11" fill="#D63B3B" rx="2"/>
-          <text x="197" y="118" font-size="9" fill="#2C3E50">Blocked (8)</text>
-        </svg>
-      </div>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s5" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">6/10</span><a href="#s7" class="fb">Weiter →</a></div>
-    <span>Release 2.4 · 19.06.2026</span>
-  </div>
-</section>
+        <!-- =======================
+             SLIDE 2 — KPI DASHBOARD
+             ======================= -->
+        <section class="slide" id="slide-2" aria-label="KPI Dashboard">
+            <div class="s2-layout">
 
-<!-- SLIDE 7 – BACKLOG TABLE -->
-<section class="slide" id="s7">
-  <div class="ab"></div>
-  <div class="hd"><h2>Top Backlog Items – Sprint 13 Kandidaten</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd" style="padding-top:16px">
-    <table>
-      <thead><tr><th>ID</th><th>User Story</th><th>Epic</th><th>SP</th><th>Prio</th><th>Status</th><th>Assignee</th></tr></thead>
-      <tbody>
-        <tr><td>US-241</td><td>Als Techniker möchte ich Aufträge offline bearbeiten</td><td>Offline Mode</td><td>8</td><td>🔴 Must</td><td><span class="tg tw">In Progress</span></td><td>A. Schmidt</td></tr>
-        <tr><td>US-238</td><td>PDF-Export für Compliance Reports</td><td>Reporting</td><td>5</td><td>🔴 Must</td><td><span class="tg td">Done</span></td><td>L. Müller</td></tr>
-        <tr><td>US-245</td><td>SSO-Integration mit IAM-Portal</td><td>Security</td><td>13</td><td>🔴 Must</td><td><span class="tg tr">Ready</span></td><td>K. Weber</td></tr>
-        <tr><td>US-250</td><td>Push-Notifications für Statusänderungen</td><td>UX Improve</td><td>5</td><td>🟡 Should</td><td><span class="tg tr">Ready</span></td><td>J. Bauer</td></tr>
-        <tr><td>US-253</td><td>Performance-Optimierung Suchindex (&gt;50k Einträge)</td><td>Performance</td><td>8</td><td>🟡 Should</td><td><span class="tg tb">Blocked</span></td><td>T. Richter</td></tr>
-        <tr><td>US-257</td><td>Mehrsprachigkeit: Englisch &amp; Französisch</td><td>i18n</td><td>13</td><td>🟢 Could</td><td><span class="tg tp">Planned</span></td><td>–</td></tr>
-        <tr><td>US-260</td><td>Dark Mode für Tablet-Interface</td><td>UX Improve</td><td>3</td><td>🟢 Could</td><td><span class="tg tp">Planned</span></td><td>–</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s6" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">7/10</span><a href="#s8" class="fb">Weiter →</a></div>
-    <span>Backlog-Stand 19.06.2026 · 82 Items</span>
-  </div>
-</section>
+                <div class="s2-topbar">
+                    <span class="s2-topbar-title">KPI Dashboard</span>
+                    <span class="s2-chip">Sprint 18</span>
+                    <span class="s2-slide-num">2 / 3</span>
+                </div>
 
-<!-- SLIDE 8 – ROADMAP -->
-<section class="slide" id="s8">
-  <div class="ab"></div>
-  <div class="hd"><h2>Produkt-Roadmap 2026</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div class="ql"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div>
-    <div class="rr"><div class="rl">Offline Modus</div><div class="rt"><div class="rb gn" style="left:0;width:30%">✓ Erledigt</div></div></div>
-    <div class="rr"><div class="rl">SSO / IAM</div><div class="rt"><div class="rb gn" style="left:15%;width:20%">✓ Done</div><div class="rb sk" style="left:35%;width:15%">Rollout</div></div></div>
-    <div class="rr"><div class="rl">Reporting v2</div><div class="rt"><div class="rb sk" style="left:25%;width:25%">In Arbeit</div></div></div>
-    <div class="rr"><div class="rl">Push Notifications</div><div class="rt"><div class="rb pl" style="left:45%;width:20%">Geplant</div></div></div>
-    <div class="rr"><div class="rl">i18n (EN / FR)</div><div class="rt"><div class="rb pl" style="left:50%;width:25%">Geplant</div></div></div>
-    <div class="rr"><div class="rl">Performance 2.0</div><div class="rt"><div class="rb pl" style="left:60%;width:20%">Geplant</div></div></div>
-    <div class="rr"><div class="rl">Mobile App v1</div><div class="rt"><div class="rb pl" style="left:75%;width:25%">Geplant</div></div></div>
-    <div style="display:flex;gap:18px;margin-top:10px">
-      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#1DB87E;border-radius:2px"></div>Erledigt</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#0082CA;border-radius:2px"></div>In Arbeit</div>
-      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#004F9F;border-radius:2px;opacity:.5"></div>Geplant</div>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s7" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span></div><span class="cn">8/10</span><a href="#s9" class="fb">Weiter →</a></div>
-    <span>Roadmap · Stand 19.06.2026</span>
-  </div>
-</section>
+                <div class="s2-grid">
 
-<!-- SLIDE 9 – RISKS -->
-<section class="slide" id="s9">
-  <div class="ab"></div>
-  <div class="hd"><h2>Risiken &amp; Nächste Schritte</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
-  <div class="bd">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:11px">
-      <div>
-        <div style="font-size:.64rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#004F9F;margin-bottom:7px">Risiken</div>
-        <div class="rhi"><div class="ri-t" style="color:#C0392B">🔴 Hoch · US-253 Blocker</div><div class="ri-b">Suchindex-Migration blockiert durch fehlendes DB-Maintenance-Fenster.</div></div>
-        <div class="rmi"><div class="ri-t" style="color:#936A00">🟡 Mittel · Kapazität Q3</div><div class="ri-b">3 Teammitglieder ab Juli in Parallelprojekt. Sprint-Capacity ≈ 110 SP.</div></div>
-        <div class="rmi"><div class="ri-t" style="color:#936A00">🟡 Mittel · API-Abhängigkeit</div><div class="ri-b">IAM-API v3 Breakchange angekündigt. Adapter-Story muss vorgezogen werden.</div></div>
-      </div>
-      <div>
-        <div style="font-size:.64rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#004F9F;margin-bottom:7px">Nächste Schritte</div>
-        <div class="ni"><div class="ni-t">Sprint 13 Planning · 23.06.</div><div class="ri-b">Backlog Refinement abgeschlossen, 8 Stories ready. Kapazität: 155 SP.</div></div>
-        <div class="ni"><div class="ni-t">IT-Ops Eskalation · 20.06.</div><div class="ri-b">Maintenance-Fenster für DB-Migration anfragen (US-253 Blocker).</div></div>
-        <div class="ni gn"><div class="ni-t" style="color:#1DB87E">Release 2.4 · 04.07.</div><div class="ri-b">Deployment nach UAT (Gate: 0 P1-Bugs).</div></div>
-      </div>
-    </div>
-    <div class="cb" style="flex:1">
-      <div class="cl">Risiko-Matrix (Eintrittswahrscheinlichkeit × Auswirkung)</div>
-      <svg viewBox="0 0 500 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="50" y1="10"  x2="50"  y2="95" stroke="#DDE3EC" stroke-width="1"/>
-        <line x1="50" y1="95"  x2="455" y2="95" stroke="#DDE3EC" stroke-width="1"/>
-        <line x1="130" y1="10" x2="130" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="210" y1="10" x2="210" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="290" y1="10" x2="290" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="370" y1="10" x2="370" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="50" y1="78"  x2="455" y2="78"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="50" y1="61"  x2="455" y2="61"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="50" y1="44"  x2="455" y2="44"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <line x1="50" y1="27"  x2="455" y2="27"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
-        <text x="130" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">1</text>
-        <text x="210" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">2</text>
-        <text x="290" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">3</text>
-        <text x="370" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">4</text>
-        <text x="450" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">5</text>
-        <text x="46" y="80"  text-anchor="end" font-size="7.5" fill="#6B7A8D">1</text>
-        <text x="46" y="63"  text-anchor="end" font-size="7.5" fill="#6B7A8D">2</text>
-        <text x="46" y="46"  text-anchor="end" font-size="7.5" fill="#6B7A8D">3</text>
-        <text x="46" y="29"  text-anchor="end" font-size="7.5" fill="#6B7A8D">4</text>
-        <text x="46" y="12"  text-anchor="end" font-size="7.5" fill="#6B7A8D">5</text>
-        <circle cx="370" cy="27" r="10" fill="rgba(214,59,59,.75)"/>
-        <text x="370" y="31" text-anchor="middle" font-size="7" fill="#fff">DB</text>
-        <circle cx="290" cy="44"  r="8"  fill="rgba(245,168,0,.85)"/>
-        <circle cx="290" cy="27"  r="7"  fill="rgba(245,168,0,.85)"/>
-        <circle cx="210" cy="61"  r="5"  fill="rgba(0,79,159,.7)"/>
-        <circle cx="210" cy="44"  r="6"  fill="rgba(0,79,159,.7)"/>
-        <circle cx="130" cy="61"  r="4"  fill="rgba(29,184,126,.8)"/>
-        <text x="470" y="20" font-size="7.5" fill="#6B7A8D">● Hoch</text>
-        <circle cx="462" cy="17" r="5" fill="rgba(214,59,59,.75)"/>
-        <text x="470" y="35" font-size="7.5" fill="#6B7A8D">● Mittel</text>
-        <circle cx="462" cy="32" r="4" fill="rgba(245,168,0,.85)"/>
-        <text x="470" y="50" font-size="7.5" fill="#6B7A8D">● Niedrig</text>
-        <circle cx="462" cy="47" r="3" fill="rgba(0,79,159,.7)"/>
-      </svg>
-    </div>
-  </div>
-  <div class="ft">
-    <span>Lufthansa Technik AG · Confidential</span>
-    <div class="fn"><a href="#s8" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span></div><span class="cn">9/10</span><a href="#s10" class="fb">Weiter →</a></div>
-    <span>Stand 19.06.2026</span>
-  </div>
-</section>
+                    <div class="kpi-card amber reveal">
+                        <span class="kpi-label">Story Points</span>
+                        <div>
+                            <div class="kpi-value">84<sub>/ 90</sub></div>
+                            <div class="kpi-delta">&#x2191; +6 vs. letzter Sprint</div>
+                        </div>
+                    </div>
 
-<!-- SLIDE 10 – Q&A -->
-<section class="slide" id="s10">
-  <div class="qa-ic">?</div>
-  <h2>Fragen &amp; Diskussion</h2>
-  <p>Vielen Dank für Ihre Aufmerksamkeit.<br>Wir freuen uns über Feedback und Fragen.</p>
-  <div class="cts">
-    <div><div class="cl2">Product Owner</div><div class="cv">Max Mustermann</div><div class="cs">max.mustermann@lhtech.com</div></div>
-    <div class="sep"></div>
-    <div><div class="cl2">Nächster Review</div><div class="cv">14. Juli 2026</div><div class="cs">Sprint 13 · MRO Digital</div></div>
-  </div>
-  <div class="s10nav"><a href="#s9" class="fb">← Zurück</a></div>
-</section>
+                    <div class="kpi-card sky reveal">
+                        <span class="kpi-label">Velocity &Oslash; (5 Sprints)</span>
+                        <div>
+                            <div class="kpi-value">78<sub>pts</sub></div>
+                            <div class="kpi-delta">&#x2191; Trend steigend</div>
+                        </div>
+                    </div>
 
+                    <div class="kpi-card chart reveal" style="grid-column:3; grid-row:1/span 2;">
+                        <div class="chart-title">Velocity &mdash; Letzte 5 Sprints</div>
+                        <div class="chart-wrap">
+                            <svg viewBox="0 0 420 260" width="100%" height="100%"
+                                 xmlns="http://www.w3.org/2000/svg" role="img"
+                                 aria-label="Velocity Bar Chart">
+                                <!-- Y-axis labels -->
+                                <text x="0" y="16"  font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">100</text>
+                                <text x="0" y="78"  font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">75</text>
+                                <text x="0" y="140" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">50</text>
+                                <text x="0" y="202" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">25</text>
+                                <!-- Grid lines -->
+                                <line x1="38" y1="12"  x2="415" y2="12"  stroke="#E5EAF2" stroke-width="1"/>
+                                <line x1="38" y1="74"  x2="415" y2="74"  stroke="#E5EAF2" stroke-width="1"/>
+                                <line x1="38" y1="136" x2="415" y2="136" stroke="#E5EAF2" stroke-width="1"/>
+                                <line x1="38" y1="198" x2="415" y2="198" stroke="#E5EAF2" stroke-width="1"/>
+                                <line x1="38" y1="240" x2="415" y2="240" stroke="#CBD5E1" stroke-width="1.5"/>
+                                <!-- Bars: baseline y=240, max 228px = 100pts -->
+                                <!-- S14: 62pts => height=141 => y=99 -->
+                                <rect x="48"  y="99"  width="56" height="141" rx="4" fill="#0082CA" opacity="0.6"/>
+                                <!-- S15: 70pts => height=160 => y=80 -->
+                                <rect x="118" y="80"  width="56" height="160" rx="4" fill="#0082CA" opacity="0.75"/>
+                                <!-- S16: 75pts => height=171 => y=69 -->
+                                <rect x="188" y="69"  width="56" height="171" rx="4" fill="#004F9F" opacity="0.85"/>
+                                <!-- S17: 78pts => height=178 => y=62 -->
+                                <rect x="258" y="62"  width="56" height="178" rx="4" fill="#004F9F" opacity="0.92"/>
+                                <!-- S18: 84pts => height=192 => y=48 (current, navy+amber cap) -->
+                                <rect x="328" y="48"  width="56" height="192" rx="4" fill="#00205B"/>
+                                <rect x="328" y="48"  width="56" height="6"   rx="3" fill="#F5A800"/>
+                                <!-- X-axis labels -->
+                                <text x="76"  y="258" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">S14</text>
+                                <text x="146" y="258" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">S15</text>
+                                <text x="216" y="258" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">S16</text>
+                                <text x="286" y="258" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="14" fill="#8EA3C3">S17</text>
+                                <text x="356" y="258" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="14" font-weight="600" fill="#00205B">S18</text>
+                                <!-- Value labels -->
+                                <text x="76"  y="93"  text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="15" font-weight="600" fill="#004F9F">62</text>
+                                <text x="146" y="74"  text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="15" font-weight="600" fill="#004F9F">70</text>
+                                <text x="216" y="63"  text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="15" font-weight="600" fill="#004F9F">75</text>
+                                <text x="286" y="56"  text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="15" font-weight="600" fill="#004F9F">78</text>
+                                <text x="356" y="42"  text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="15" font-weight="700" fill="#00205B">84</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card green reveal">
+                        <span class="kpi-label">Done Rate</span>
+                        <div>
+                            <div class="kpi-value">93<sub>%</sub></div>
+                            <div class="kpi-delta">&#x2191; Ziel erreicht</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card red reveal">
+                        <span class="kpi-label">Offene Bugs</span>
+                        <div>
+                            <div class="kpi-value">12<sub>P1&ndash;P3</sub></div>
+                            <div class="kpi-delta down">&#x2191; +3 neu ge&ouml;ffnet</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =======================
+             SLIDE 3 — Q&A / CLOSING
+             ======================= -->
+        <section class="slide" id="slide-3" aria-label="Abschluss und Fragen">
+            <div class="s3-layout">
+
+                <div class="s3-left">
+                    <div class="s3-bg-q">?</div>
+                    <p class="s3-tag reveal">Abschluss</p>
+                    <h2 class="s3-heading reveal">Fragen<br>&amp;<br>Antworten</h2>
+                </div>
+
+                <div class="s3-right">
+                    <p class="s3-contact-label reveal">Ihr Ansprechpartner</p>
+                    <p class="s3-name reveal">Max Mustermann</p>
+                    <p class="s3-role reveal">Product Owner &middot; Digital Solutions</p>
+                    <div class="s3-divider reveal"></div>
+                    <ul class="s3-list">
+                        <li class="reveal">
+                            <span class="s3-icon">&#x2709;</span>
+                            max.mustermann@lht.dlh.de
+                        </li>
+                        <li class="reveal">
+                            <span class="s3-icon">#</span>
+                            Teams: Max Mustermann
+                        </li>
+                        <li class="reveal">
+                            <span class="s3-icon">&#x25A6;</span>
+                            Confluence &middot; JIRA &middot; Sprint Board
+                        </li>
+                    </ul>
+
+                    <div class="s3-brand reveal">
+                        <div class="s3-brand-name">LUFTHANSA TECHNIK</div>
+                        <div class="s3-brand-sub">lufthansa-technik.com</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
 </div>
+
+<!-- Progress dots outside the stage -->
+<nav class="deck-controls" aria-label="Folien-Navigation">
+    <button class="progress-dot active" data-slide="0" aria-label="Folie 1"></button>
+    <button class="progress-dot"        data-slide="1" aria-label="Folie 2"></button>
+    <button class="progress-dot"        data-slide="2" aria-label="Folie 3"></button>
+</nav>
+
+<!-- Inline edit affordance (top-left hotzone) -->
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Bearbeitungsmodus (E)">&#x270F; Bearbeiten</button>
+
 <script>
-var ids=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
-window.addEventListener('keydown',function(e){
-  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft'&&e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
-  e.preventDefault();
-  var h=(location.hash||'#s1').replace('#','');
-  var i=ids.indexOf(h);if(i<0)i=0;
-  if((e.key==='ArrowRight'||e.key==='ArrowDown')&&i<ids.length-1)location.hash=ids[i+1];
-  if((e.key==='ArrowLeft' ||e.key==='ArrowUp')  &&i>0)location.hash=ids[i-1];
-});
+    /* =========================================
+       SLIDE PRESENTATION CONTROLLER
+       Fixed 1920x1080 stage — scales to viewport
+       ========================================= */
+    class SlidePresentation {
+        constructor() {
+            this.slides  = document.querySelectorAll('.slide');
+            this.dots    = document.querySelectorAll('.progress-dot');
+            this.stage   = document.getElementById('deckStage');
+            this.current = 0;
+
+            this.setupStageScale();
+            this.setupKeyboardNav();
+            this.setupTouchNav();
+            this.setupWheelNav();
+            this.setupDotNav();
+            this.showSlide(0);
+        }
+
+        setupStageScale() {
+            const scale = () => {
+                const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                const x = (window.innerWidth  - 1920 * f) / 2;
+                const y = (window.innerHeight - 1080 * f) / 2;
+                this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+            };
+            scale();
+            window.addEventListener('resize', scale);
+        }
+
+        setupKeyboardNav() {
+            window.addEventListener('keydown', (e) => {
+                if (e.target.getAttribute('contenteditable')) return;
+                if (['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) {
+                    e.preventDefault(); this.next();
+                }
+                if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) {
+                    e.preventDefault(); this.prev();
+                }
+            });
+        }
+
+        setupTouchNav() {
+            let sx = 0, sy = 0;
+            this.stage.addEventListener('touchstart', (e) => {
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+            }, { passive: true });
+            this.stage.addEventListener('touchend', (e) => {
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                    dx < 0 ? this.next() : this.prev();
+                }
+            }, { passive: true });
+        }
+
+        setupWheelNav() {
+            let last = 0;
+            window.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const now = Date.now();
+                if (now - last < 600) return;
+                last = now;
+                e.deltaY > 0 ? this.next() : this.prev();
+            }, { passive: false });
+        }
+
+        setupDotNav() {
+            this.dots.forEach((dot) => {
+                dot.addEventListener('click', () => {
+                    this.showSlide(parseInt(dot.dataset.slide, 10));
+                });
+            });
+        }
+
+        next() { this.showSlide(this.current + 1); }
+        prev() { this.showSlide(this.current - 1); }
+
+        showSlide(index) {
+            this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+            this.slides.forEach((slide, i) => {
+                const on = i === this.current;
+                slide.classList.toggle('active',  on);
+                slide.classList.toggle('visible', on);
+            });
+            this.dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === this.current);
+            });
+        }
+    }
+
+    /* =========================================
+       INLINE EDITOR
+       JS hover with 400ms grace period
+       (CSS-only ~ selector fails: pointer-events:none breaks hover chain)
+       ========================================= */
+    const editor = {
+        isActive: false,
+        editableSelector: [
+            '.slide h1', '.slide h2',
+            '.slide .s1-eyebrow', '.slide .s1-subtitle', '.slide .s1-meta-item',
+            '.slide .kpi-value', '.slide .kpi-delta', '.slide .kpi-label',
+            '.slide .s3-name', '.slide .s3-role', '.slide .s3-list li'
+        ].join(','),
+
+        toggleEditMode() {
+            this.isActive = !this.isActive;
+            const btn = document.getElementById('editToggle');
+            btn.classList.toggle('active', this.isActive);
+            btn.textContent = this.isActive ? '✔ Fertig' : '✏ Bearbeiten';
+            document.querySelectorAll(this.editableSelector).forEach((el) => {
+                el.setAttribute('contenteditable', this.isActive ? 'true' : 'false');
+            });
+            if (!this.isActive) {
+                localStorage.setItem('lht-slides', document.getElementById('deckStage').innerHTML);
+            }
+        }
+    };
+
+    const hotzone    = document.getElementById('editHotzone');
+    const editToggle = document.getElementById('editToggle');
+    let hideTimeout  = null;
+
+    hotzone.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+        editToggle.classList.add('show');
+    });
+    hotzone.addEventListener('mouseleave', () => {
+        hideTimeout = setTimeout(() => {
+            if (!editor.isActive) editToggle.classList.remove('show');
+        }, 400);
+    });
+    editToggle.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); });
+    editToggle.addEventListener('mouseleave', () => {
+        hideTimeout = setTimeout(() => {
+            if (!editor.isActive) editToggle.classList.remove('show');
+        }, 400);
+    });
+    hotzone.addEventListener('click',    () => editor.toggleEditMode());
+    editToggle.addEventListener('click', () => editor.toggleEditMode());
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+            editor.toggleEditMode();
+        }
+    });
+
+    /* Boot */
+    const presentation = new SlidePresentation();
 </script>
 </body>
 </html>
