@@ -203,113 +203,73 @@
             color:var(--white);line-height:1.4;
         }
 
-        /* Right panel — airplane animation */
-        .s3-right{
-            flex:1;position:relative;overflow:hidden;
-            background:#00174A;
-        }
-        .s3-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(76,184,216,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(76,184,216,.05) 1px,transparent 1px);background-size:60px 60px;}
-
-        /* Runway at the bottom */
-        .runway{
-            position:absolute;bottom:0;left:0;right:0;height:80px;
-            background:rgba(0,16,50,.8);
-            border-top:3px solid rgba(76,184,216,.3);
-            display:flex;align-items:center;justify-content:center;gap:60px;
-        }
-        .runway-mark{width:120px;height:16px;background:rgba(76,184,216,.25);border-radius:3px;}
-
-        /* Ground glow */
-        .ground-glow{
-            position:absolute;bottom:80px;left:0;right:0;height:120px;
-            background:linear-gradient(to top,rgba(76,184,216,.08),transparent);
+        /* ══ SLIDE 3 — RIGHT PANEL: Steigflug-Animation (adapted from steigflug.html) ══ */
+        .s3-right {
+            flex: 1; position: relative; overflow: hidden;
+            background: radial-gradient(130% 90% at 65% 20%, #0d1e44 0%, #00174A 55%, #030914 100%);
         }
 
-        /* Airplane SVG wrapper — GPU layer */
-        .plane-wrap {
-            position: absolute;
-            bottom: 148px;
-            left: 80px;
-            will-change: transform, opacity;
+        /* Twinkling stars */
+        .s3-stars { position: absolute; inset: 0; pointer-events: none; }
+        .s3-star  { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #cfe0ff; opacity: .18; }
+
+        /* Horizon teal glow */
+        .s3-horizon {
+            position: absolute; bottom: -8%; left: -25%; width: 150%; height: 35%;
+            pointer-events: none; opacity: 0;
+            background: radial-gradient(60% 100% at 50% 100%, rgba(76,184,216,.14), transparent 68%);
         }
 
-        /* Contrail SVG — drawn via stroke-dashoffset (GPU smooth) */
-        .contrail-svg {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: visible;
-        }
-        .ctrail-1, .ctrail-2 {
-            fill: none;
-            stroke-linecap: round;
-            stroke-dasharray: 1100;
-            stroke-dashoffset: 1100;
-        }
-        .ctrail-1 { stroke: rgba(76,184,216,.55); stroke-width: 3.5; }
-        .ctrail-2 { stroke: rgba(255,255,255,.22); stroke-width: 2; }
+        /* Full-panel SVG scene */
+        .s3-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 
-        /* Takeoff: runway roll → rotate → climb → fade
-           7 phases, smooth cubic-bezier, will-change lets GPU composite */
-        @keyframes takeoff {
-            0%   { transform: translate(  0px,   0px) rotate( 0deg); opacity: 1;   }
-            8%   { transform: translate( 60px,  -2px) rotate( 1deg); opacity: 1;   }
-            16%  { transform: translate(145px, -12px) rotate( 4deg); opacity: 1;   }
-            26%  { transform: translate(255px, -55px) rotate(14deg); opacity: 1;   }
-            38%  { transform: translate(380px,-150px) rotate(22deg); opacity: 1;   }
-            52%  { transform: translate(520px,-270px) rotate(24deg); opacity: 1;   }
-            66%  { transform: translate(650px,-390px) rotate(22deg); opacity: 0.9; }
-            80%  { transform: translate(770px,-490px) rotate(20deg); opacity: 0.6; }
-            92%  { transform: translate(870px,-565px) rotate(18deg); opacity: 0.2; }
-            100% { transform: translate(930px,-610px) rotate(17deg); opacity: 0;   }
+        /* Trail — pathLength="1" trick: dashoffset 1→0 draws it */
+        .s3-trail {
+            fill: none; stroke: url(#s3Trail); stroke-width: 3.2; stroke-linecap: round;
+            stroke-dasharray: 1; stroke-dashoffset: 1;
         }
 
-        /* Contrail draw: stroke-dashoffset 900→0, then fade */
-        @keyframes draw-trail-1 {
-            0%   { stroke-dashoffset: 1100; opacity: 0; }
-            5%   { opacity: 0.7; }
-            55%  { stroke-dashoffset: 0;    opacity: 0.6; }
-            80%  { stroke-dashoffset: 0;    opacity: 0.3; }
-            100% { stroke-dashoffset: 0;    opacity: 0; }
-        }
-        @keyframes draw-trail-2 {
-            0%   { stroke-dashoffset: 1100; opacity: 0; }
-            10%  { opacity: 0.4; }
-            55%  { stroke-dashoffset: 0;    opacity: 0.35; }
-            80%  { stroke-dashoffset: 0;    opacity: 0.15; }
-            100% { stroke-dashoffset: 0;    opacity: 0; }
+        /* Plane */
+        .s3-plane-body { filter: drop-shadow(0 5px 22px rgba(76,184,216,.30)); }
+        .s3-plane-move { transform-box: fill-box; transform-origin: 50% 50%; opacity: 0; }
+
+        /* .s3-anim is added/removed by JS to restart animations on each visit */
+        .s3-anim .s3-horizon    { animation: s3glow 1.8s .10s ease    forwards; }
+        .s3-anim .s3-star       { animation: s3tw   6.0s     ease-in-out infinite; }
+        .s3-anim .s3-trail      { animation: s3draw 3.8s .40s linear   forwards; }
+        .s3-anim .s3-plane-move { animation: s3fly  3.8s .40s linear   forwards; }
+
+        /* Trail draws itself */
+        @keyframes s3draw { to { stroke-dashoffset: 0; } }
+
+        /* Horizon fades in */
+        @keyframes s3glow { to { opacity: 1; } }
+
+        /* Stars twinkle */
+        @keyframes s3tw { 0%,100%{opacity:.14} 50%{opacity:.52} }
+
+        /* Plane follows path from bottom-left to top-right.
+           Offsets = (start_x - end_x, start_y - end_y) in SVG coords.
+           Path: M60 820 → end (996,190). Offset at start: (-936, 630).
+           Scale simulates perspective depth (small=far, large=near). */
+        @keyframes s3fly {
+            0%   { opacity: 0; transform: translate(-936px,  630px) scale(.50); }
+            9%   { opacity: 1; transform: translate(-860px,  648px) scale(.53); }
+            23%  {             transform: translate(-718px,  643px) scale(.60); }
+            36%  {             transform: translate(-578px,  606px) scale(.66); }
+            50%  {             transform: translate(-438px,  546px) scale(.73); }
+            63%  {             transform: translate(-298px,  463px) scale(.80); }
+            76%  {             transform: translate(-173px,  358px) scale(.87); }
+            88%  {             transform: translate( -68px,  222px) scale(.94); }
+            100% { opacity: 1; transform: translate(   0px,    0px) scale(1.0); }
         }
 
-        @keyframes clouds-drift {
-            0%   { transform: translateX(0);      opacity: 0; }
-            12%  { opacity: 0.7; }
-            100% { transform: translateX(-220px); opacity: 0; }
+        @media (prefers-reduced-motion: reduce) {
+            .s3-anim .s3-trail      { stroke-dashoffset: 0 !important; animation: none !important; }
+            .s3-anim .s3-plane-move { opacity: 1 !important; transform: none !important; animation: none !important; }
+            .s3-anim .s3-horizon    { opacity: 1 !important; animation: none !important; }
+            .s3-anim .s3-star       { animation: none !important; }
         }
-
-        /* Trigger all on .visible */
-        .slide.visible .plane-wrap {
-            animation: takeoff 7s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
-        }
-        .slide.visible .ctrail-1 {
-            animation: draw-trail-1 7s ease-in-out 0.6s forwards;
-        }
-        .slide.visible .ctrail-2 {
-            animation: draw-trail-2 7s ease-in-out 1.1s forwards;
-        }
-        .slide.visible .cloud {
-            animation: clouds-drift 6s linear 1.5s forwards;
-        }
-        .slide.visible .cloud2 {
-            animation: clouds-drift 7s linear 2.5s forwards;
-        }
-
-        /* Cloud shapes */
-        .cloud, .cloud2 { position: absolute; opacity: 0; }
-        .cloud  { top: 180px; right: 100px; }
-        .cloud2 { top: 310px; right: 260px; }
 
         /* Slide number badge */
         .s3-slidenum{
@@ -550,88 +510,50 @@
         </ul>
     </div>
     <div class="s3-right">
-        <div class="s3-grid"></div>
-        <div class="ground-glow"></div>
-
-        <!-- Contrail SVG: path coords calculated from plane-wrap start position
-             (left:80 + engine-x:146 = 226; top:822 + engine-y:37 = 859 / +31 = 890)
-             and animation translate offsets at each keyframe. -->
-        <svg class="contrail-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- Engine 1 contrail (upper) -->
-            <path class="ctrail-1"
-                  d="M 226 859 C 340 850 480 800 606 708 C 740 605 876 468 996 368"/>
-            <!-- Engine 2 contrail (lower, 31px offset) -->
-            <path class="ctrail-2"
-                  d="M 226 890 C 340 881 480 831 606 739 C 740 636 876 499 996 399"/>
+        <!-- Twinkling stars -->
+        <div class="s3-stars" id="s3stars" aria-hidden="true"></div>
+        <!-- Horizon teal glow -->
+        <div class="s3-horizon" aria-hidden="true"></div>
+        <!-- Steigflug scene: trail + plane -->
+        <svg class="s3-scene" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid meet"
+             role="img" aria-label="Flugzeug steigt von links unten nach rechts oben">
+            <defs>
+                <linearGradient id="s3Trail" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%"   stop-color="#4CB8D8" stop-opacity="0"/>
+                    <stop offset="18%"  stop-color="#4CB8D8" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.90"/>
+                </linearGradient>
+            </defs>
+            <!-- Flight trail: bottom-left → top-right -->
+            <path class="s3-trail" pathLength="1"
+                  d="M 60 820 C 250 870 430 840 600 740 C 750 650 860 520 930 380 C 970 300 990 230 996 190"/>
+            <!-- Top-down airplane (white + teal), arrives at (996,190) nose-up-right -->
+            <g class="s3-plane-move">
+                <g class="s3-plane-body" transform="translate(996,190) rotate(30) scale(0.72) translate(-100,-206)">
+                    <!-- Left wing -->
+                    <path fill="white"                d="M91 110 L22 170 L28 178 L92 142 Z"/>
+                    <!-- Right wing -->
+                    <path fill="rgba(255,255,255,.75)" d="M109 110 L178 170 L172 178 L108 142 Z"/>
+                    <!-- Engines (teal) -->
+                    <rect x="133" y="140" width="10" height="20" rx="5" fill="#4CB8D8"/>
+                    <rect x="57"  y="140" width="10" height="20" rx="5" fill="#4CB8D8"/>
+                    <!-- Tailplane -->
+                    <path fill="white"                d="M106 184 L150 210 L146 214 L104 196 Z"/>
+                    <path fill="rgba(255,255,255,.8)"  d="M94  184 L50  210 L54  214 L96  196 Z"/>
+                    <!-- Fin -->
+                    <path fill="rgba(255,255,255,.65)" d="M100 180 L104 207 L96 207 Z"/>
+                    <!-- Fuselage -->
+                    <path fill="white" d="M100 28 C108 30 112 40 112 60 L112 150 C112 175 110 195 104 206 L96 206 C90 195 88 175 88 150 L88 60 C88 40 92 30 100 28 Z"/>
+                    <!-- Nose teal cap -->
+                    <ellipse cx="100" cy="29" rx="8" ry="5" fill="#4CB8D8" opacity=".8"/>
+                    <!-- Window dots -->
+                    <circle cx="100" cy="70"  r="3.5" fill="rgba(76,184,216,.5)"/>
+                    <circle cx="100" cy="85"  r="3.5" fill="rgba(76,184,216,.45)"/>
+                    <circle cx="100" cy="100" r="3.5" fill="rgba(76,184,216,.4)"/>
+                    <circle cx="100" cy="115" r="3.5" fill="rgba(76,184,216,.35)"/>
+                </g>
+            </g>
         </svg>
-
-        <!-- Clouds (drifting past in mid-air) -->
-        <div class="cloud">
-            <svg width="200" height="90" viewBox="0 0 200 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="100" cy="62" rx="88" ry="24" fill="rgba(255,255,255,.055)"/>
-                <ellipse cx="78"  cy="50" rx="55" ry="22" fill="rgba(255,255,255,.045)"/>
-                <ellipse cx="122" cy="47" rx="50" ry="20" fill="rgba(255,255,255,.04)"/>
-            </svg>
-        </div>
-        <div class="cloud2">
-            <svg width="155" height="68" viewBox="0 0 155 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="77" cy="48" rx="66" ry="18" fill="rgba(255,255,255,.05)"/>
-                <ellipse cx="60" cy="38" rx="42" ry="16" fill="rgba(255,255,255,.04)"/>
-            </svg>
-        </div>
-
-        <!-- Airplane — LHT website icon style: clean white flat commercial airliner, nose right -->
-        <div class="plane-wrap" id="plane">
-            <svg width="300" height="110" viewBox="0 0 300 110"
-                 fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Flugzeug">
-
-                <!-- ── Fuselage ── -->
-                <!-- Main tube -->
-                <path d="M 52 52 Q 100 46 200 44 Q 248 43 272 50 Q 248 57 200 56 Q 100 54 52 58 Z"
-                      fill="white"/>
-                <!-- Nose cone — teal accent matches LHT icon style -->
-                <path d="M 240 44 Q 278 43 294 50 Q 278 57 240 56 Z"
-                      fill="#4CB8D8"/>
-
-                <!-- ── Main wing (swept, under fuselage mid) ── -->
-                <!-- Upper wing surface -->
-                <path d="M 178 50 L 118 6 L 108 9 L 166 53 Z" fill="white"/>
-                <!-- Lower wing (slight transparency for depth) -->
-                <path d="M 178 54 L 118 98 L 108 95 L 166 51 Z" fill="rgba(255,255,255,.72)"/>
-
-                <!-- ── Wing engines (pods) — teal like LHT icons ── -->
-                <rect x="130" y="62" width="32" height="11" rx="5.5" fill="#4CB8D8" opacity=".85"/>
-                <rect x="130" y="31" width="32" height="11" rx="5.5" fill="#4CB8D8" opacity=".85"/>
-
-                <!-- ── Horizontal stabiliser ── -->
-                <path d="M 72 50 L 46 32 L 40 34 L 62 52 Z" fill="white"/>
-                <path d="M 72 54 L 46 72 L 40 70 L 62 52 Z" fill="rgba(255,255,255,.7)"/>
-
-                <!-- ── Vertical stabiliser ── -->
-                <path d="M 60 50 L 55 24 L 72 42 L 72 50 Z" fill="white"/>
-
-                <!-- ── Window dots (teal, LHT icon style) ── -->
-                <circle cx="224" cy="50" r="4"   fill="#4CB8D8" opacity=".7"/>
-                <circle cx="210" cy="50" r="3.5" fill="#4CB8D8" opacity=".6"/>
-                <circle cx="196" cy="50" r="3.5" fill="#4CB8D8" opacity=".5"/>
-                <circle cx="183" cy="50" r="3.5" fill="#4CB8D8" opacity=".4"/>
-
-                <!-- ── Engine exhaust glow (subtle, behind the plane) ── -->
-                <ellipse cx="52" cy="54" rx="8" ry="4" fill="rgba(76,184,216,.25)"/>
-            </svg>
-        </div>
-
-        <!-- Runway -->
-        <div class="runway">
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-            <div class="runway-mark"></div>
-        </div>
-
         <span class="s3-slidenum">3 / 4</span>
     </div>
 </section>
@@ -866,6 +788,7 @@ class SlidePresentation {
             s.classList.toggle('visible', on);
         });
         this.dots.forEach((d, i) => d.classList.toggle('active', i === this.current));
+        if (this.current === 2) restartS3Anim();
     }
 }
 
@@ -902,7 +825,32 @@ document.addEventListener('keydown', e => {
         editor.toggleEditMode();
 });
 
+/* ── Slide 3 steigflug helpers ── */
+function initS3Stars() {
+    const container = document.getElementById('s3stars');
+    if (!container || container.dataset.init) return;
+    let h = '';
+    for (let i = 0; i < 48; i++) {
+        const x  = (Math.random() * 100).toFixed(2);
+        const y  = (Math.random() * 70).toFixed(2);
+        const d  = (Math.random() * 7).toFixed(2);
+        const sc = (.6 + Math.random() * 1.3).toFixed(2);
+        h += `<span class="s3-star" style="left:${x}%;top:${y}%;animation-delay:${d}s;transform:scale(${sc})"></span>`;
+    }
+    container.innerHTML = h;
+    container.dataset.init = '1';
+}
+
+function restartS3Anim() {
+    const right = document.querySelector('#s3 .s3-right');
+    if (!right) return;
+    right.classList.remove('s3-anim');
+    void right.offsetWidth;
+    right.classList.add('s3-anim');
+}
+
 /* Boot */
+initS3Stars();
 const presentation = new SlidePresentation();
 </script>
 </body>
