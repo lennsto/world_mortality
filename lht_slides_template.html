@@ -1,1076 +1,588 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lufthansa Technik – Product Review Template</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    /* ── Tokens ─────────────────────────────────────────────── */
-    :root {
-      --lht-navy:   #00205B;
-      --lht-blue:   #004F9F;
-      --lht-sky:    #0082CA;
-      --lht-amber:  #F5A800;
-      --lht-gold:   #D4891A;
-      --lht-white:  #FFFFFF;
-      --lht-light:  #F4F6F9;
-      --lht-mid:    #DDE3EC;
-      --lht-dark:   #1A1A2E;
-      --lht-text:   #2C3E50;
-      --lht-muted:  #6B7A8D;
-      --slide-w: 1280px;
-      --slide-h: 720px;
-    }
-
-    /* ── Reset / Base ───────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #0A1628;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 24px 16px 80px;
-      user-select: none;
-    }
-
-    /* ── Slide Stage ────────────────────────────────────────── */
-    #stage {
-      position: relative;
-      width: var(--slide-w);
-      max-width: 100%;
-      aspect-ratio: 16 / 9;
-    }
-
-    .slide {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: var(--lht-white);
-      overflow: hidden;
-      border-radius: 4px;
-      box-shadow: 0 8px 40px rgba(0,0,0,.55);
-    }
-    .slide.active { display: flex; flex-direction: column; }
-
-    /* ── Common structural helpers ──────────────────────────── */
-    .slide-header {
-      background: var(--lht-navy);
-      color: var(--lht-white);
-      padding: 18px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .slide-header h2 {
-      font-size: 1.35rem;
-      font-weight: 600;
-      letter-spacing: .3px;
-    }
-    .slide-header .logo-area { display: flex; align-items: center; gap: 10px; }
-    .logo-mark {
-      width: 38px; height: 38px;
-      background: var(--lht-amber);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 1rem; color: var(--lht-navy);
-    }
-    .logo-text { font-size: .8rem; font-weight: 600; letter-spacing: 1px; opacity: .9; }
-
-    .slide-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 28px 40px 20px;
-      background: var(--lht-light);
-      overflow: hidden;
-    }
-
-    .slide-footer {
-      background: var(--lht-navy);
-      color: rgba(255,255,255,.55);
-      font-size: .68rem;
-      padding: 6px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .accent-bar {
-      height: 4px;
-      background: linear-gradient(90deg, var(--lht-amber) 0%, var(--lht-sky) 100%);
-    }
-
-    /* ── Typography helpers ─────────────────────────────────── */
-    .section-title {
-      font-size: .72rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--lht-blue);
-      margin-bottom: 4px;
-    }
-    .card-title {
-      font-size: .85rem;
-      font-weight: 600;
-      color: var(--lht-muted);
-      margin-bottom: 2px;
-    }
-    .big-number {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--lht-navy);
-      line-height: 1;
-    }
-    .delta {
-      font-size: .78rem;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-top: 4px;
-    }
-    .delta.up   { background: #E6F9F0; color: #1A8A56; }
-    .delta.down { background: #FEF0F0; color: #D63B3B; }
-    .delta.flat { background: #EFF3FB; color: var(--lht-blue); }
-
-    /* ── KPI Grid ───────────────────────────────────────────── */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
-    .kpi-card {
-      background: var(--lht-white);
-      border-radius: 6px;
-      padding: 16px 18px;
-      border-left: 4px solid var(--lht-amber);
-      box-shadow: 0 1px 6px rgba(0,32,91,.08);
-    }
-    .kpi-card.blue  { border-color: var(--lht-blue); }
-    .kpi-card.sky   { border-color: var(--lht-sky); }
-    .kpi-card.green { border-color: #1DB87E; }
-
-    /* ── Two-column layout ──────────────────────────────────── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; flex: 1; }
-
-    /* ── Chart container ────────────────────────────────────── */
-    .chart-wrap {
-      background: var(--lht-white);
-      border-radius: 6px;
-      padding: 16px;
-      box-shadow: 0 1px 6px rgba(0,32,91,.08);
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .chart-wrap canvas { flex: 1; min-height: 0; }
-    .chart-title {
-      font-size: .82rem;
-      font-weight: 700;
-      color: var(--lht-navy);
-      margin-bottom: 10px;
-    }
-
-    /* ── Table ──────────────────────────────────────────────── */
-    table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-    thead tr { background: var(--lht-navy); color: var(--lht-white); }
-    thead th { padding: 9px 12px; text-align: left; font-weight: 600; letter-spacing: .3px; }
-    tbody tr:nth-child(even) { background: var(--lht-mid); }
-    tbody td { padding: 8px 12px; color: var(--lht-text); border-bottom: 1px solid var(--lht-mid); }
-    .tag {
-      display: inline-block;
-      font-size: .68rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      letter-spacing: .3px;
-    }
-    .tag-done    { background: #D4F5E5; color: #1A8A56; }
-    .tag-wip     { background: #FFF3CD; color: #936A00; }
-    .tag-planned { background: #E2EAFD; color: #1D4ED8; }
-    .tag-blocked { background: #FDE8E8; color: #C0392B; }
-
-    /* ── Roadmap / Gantt ────────────────────────────────────── */
-    .roadmap-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .roadmap-label {
-      width: 140px;
-      font-size: .78rem;
-      font-weight: 600;
-      color: var(--lht-navy);
-      flex-shrink: 0;
-    }
-    .roadmap-track {
-      flex: 1;
-      height: 28px;
-      background: var(--lht-mid);
-      border-radius: 4px;
-      position: relative;
-    }
-    .roadmap-bar {
-      position: absolute;
-      top: 0; bottom: 0;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      font-size: .7rem;
-      font-weight: 700;
-      color: var(--lht-white);
-      white-space: nowrap;
-    }
-    .bar-done    { background: #1DB87E; }
-    .bar-active  { background: var(--lht-sky); }
-    .bar-planned { background: var(--lht-blue); opacity: .55; }
-
-    .quarter-labels {
-      display: flex;
-      margin-left: 152px;
-      margin-bottom: 4px;
-    }
-    .quarter-labels span {
-      flex: 1;
-      font-size: .68rem;
-      font-weight: 700;
-      color: var(--lht-muted);
-      letter-spacing: 1px;
-    }
-
-    /* ── Sprint status pills ─────────────────────────────────── */
-    .sprint-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-    .pill {
-      background: var(--lht-white);
-      border: 1.5px solid var(--lht-mid);
-      border-radius: 6px;
-      padding: 10px 14px;
-      min-width: 110px;
-      box-shadow: 0 1px 4px rgba(0,32,91,.06);
-    }
-    .pill-label { font-size: .68rem; font-weight: 700; color: var(--lht-muted); text-transform: uppercase; letter-spacing: 1px; }
-    .pill-value { font-size: 1.3rem; font-weight: 800; color: var(--lht-navy); margin-top: 2px; }
-
-    /* ── Bullet list ────────────────────────────────────────── */
-    .agenda-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .agenda-list li {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--lht-white);
-      border-radius: 6px;
-      padding: 12px 16px;
-      font-size: .88rem;
-      color: var(--lht-text);
-      font-weight: 500;
-      box-shadow: 0 1px 4px rgba(0,32,91,.06);
-    }
-    .agenda-num {
-      width: 28px; height: 28px;
-      background: var(--lht-amber);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: .78rem; color: var(--lht-navy);
-      flex-shrink: 0;
-    }
-
-    /* ── Title Slide ────────────────────────────────────────── */
-    #slide-1 {
-      background: linear-gradient(135deg, var(--lht-navy) 0%, #001840 60%, #0A2460 100%);
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 60px 80px;
-    }
-    #slide-1 .pretitle {
-      font-size: .8rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--lht-amber);
-      margin-bottom: 16px;
-    }
-    #slide-1 h1 {
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: var(--lht-white);
-      line-height: 1.1;
-      max-width: 680px;
-      margin-bottom: 20px;
-    }
-    #slide-1 .subtitle {
-      font-size: 1.05rem;
-      color: rgba(255,255,255,.7);
-      margin-bottom: 36px;
-      font-weight: 400;
-    }
-    #slide-1 .meta { display: flex; gap: 28px; }
-    #slide-1 .meta-item { text-align: left; }
-    #slide-1 .meta-label { font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--lht-amber); }
-    #slide-1 .meta-value { font-size: .9rem; color: var(--lht-white); margin-top: 2px; font-weight: 500; }
-    #slide-1 .deco-circle {
-      position: absolute;
-      right: -80px; top: -80px;
-      width: 480px; height: 480px;
-      border-radius: 50%;
-      border: 80px solid rgba(245,168,0,.08);
-    }
-    #slide-1 .deco-circle-2 {
-      position: absolute;
-      right: 80px; bottom: -120px;
-      width: 320px; height: 320px;
-      border-radius: 50%;
-      border: 60px solid rgba(0,130,202,.1);
-    }
-    #slide-1 .amber-line {
-      width: 60px; height: 5px;
-      background: var(--lht-amber);
-      border-radius: 3px;
-      margin-bottom: 24px;
-    }
-    #slide-1 .logo-title {
-      position: absolute;
-      top: 30px; right: 40px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    #slide-1 .logo-mark-lg {
-      width: 46px; height: 46px;
-      background: var(--lht-amber);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 1.1rem; color: var(--lht-navy);
-    }
-    #slide-1 .logo-text-lg { color: rgba(255,255,255,.8); font-size: .78rem; font-weight: 600; letter-spacing: 1.5px; line-height: 1.3; }
-
-    /* ── Closing slide ──────────────────────────────────────── */
-    #slide-10 {
-      background: linear-gradient(150deg, var(--lht-navy) 0%, #002878 50%, #004F9F 100%);
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    #slide-10 h2 { font-size: 3rem; font-weight: 900; color: var(--lht-white); margin-bottom: 12px; }
-    #slide-10 p  { font-size: 1.1rem; color: rgba(255,255,255,.65); max-width: 500px; }
-    #slide-10 .qa-icon {
-      width: 80px; height: 80px;
-      background: var(--lht-amber);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-      color: var(--lht-navy);
-      margin: 0 auto 24px;
-      font-weight: 900;
-    }
-
-    /* ── Navigation ─────────────────────────────────────────── */
-    #nav {
-      margin-top: 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .nav-btn {
-      background: var(--lht-blue);
-      color: var(--lht-white);
-      border: none;
-      border-radius: 4px;
-      padding: 9px 22px;
-      font-size: .85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .nav-btn:hover { background: var(--lht-sky); }
-    .nav-btn:disabled { background: #333; opacity: .4; cursor: not-allowed; }
-
-    #dots { display: flex; gap: 7px; }
-    .dot {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.25);
-      cursor: pointer;
-      transition: background .15s, transform .15s;
-    }
-    .dot.active { background: var(--lht-amber); transform: scale(1.3); }
-
-    #slide-counter { color: rgba(255,255,255,.45); font-size: .78rem; min-width: 54px; text-align: center; }
-
-    /* ── Responsive scale ───────────────────────────────────── */
-    @media (max-width: 1320px) {
-      #stage { width: 100%; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lufthansa Technik – Product Review Template</title>
+<style>
+:root{
+  --n:#00205B;--b:#004F9F;--s:#0082CA;--a:#F5A800;
+  --g:#1DB87E;--r:#D63B3B;--w:#FFFFFF;--l:#F4F6F9;
+  --m:#DDE3EC;--t:#2C3E50;--u:#6B7A8D;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;background:#0A1628;
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:24px 16px 40px;
+}
+#stage{position:relative;width:1280px;max-width:100%;aspect-ratio:16/9}
+.slide{
+  display:none;position:absolute;inset:0;background:var(--w);
+  overflow:hidden;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.55);
+  flex-direction:column;
+}
+#s1{display:flex}
+.slide:target{display:flex}
+body:has(.slide:target) #s1:not(:target){display:none}
+.ab{height:4px;background:linear-gradient(90deg,var(--a),var(--s));flex-shrink:0}
+.hd{background:var(--n);color:var(--w);padding:13px 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hd h2{font-size:1.15rem;font-weight:700}
+.logo{display:flex;align-items:center;gap:8px}
+.lm{width:32px;height:32px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:var(--n)}
+.lt{font-size:.68rem;font-weight:600;letter-spacing:1px;opacity:.85}
+.bd{flex:1;display:flex;flex-direction:column;padding:18px 34px 12px;background:var(--l);overflow:hidden;min-height:0}
+.ft{background:var(--n);color:rgba(255,255,255,.45);font-size:.62rem;padding:0 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;height:38px}
+.fn{display:flex;align-items:center;gap:8px}
+.fb{display:inline-flex;align-items:center;padding:4px 13px;background:var(--b);color:var(--w);text-decoration:none;border-radius:3px;font-size:.68rem;font-weight:700;transition:background .15s}
+.fb:hover{background:var(--s)}
+.dots{display:flex;gap:4px}
+.d{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22);display:inline-block}
+.d.on{background:var(--a)}
+.cn{color:rgba(255,255,255,.38);font-size:.62rem}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
+.kc{background:var(--w);border-radius:5px;padding:13px 15px;border-left:4px solid var(--a);box-shadow:0 1px 5px rgba(0,32,91,.08)}
+.kc.b{border-color:var(--b)}.kc.s{border-color:var(--s)}.kc.g{border-color:var(--g)}
+.ct{font-size:.68rem;font-weight:600;color:var(--u);margin-bottom:2px}
+.bn{font-size:1.9rem;font-weight:800;color:var(--n);line-height:1}
+.dl{display:inline-block;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:20px;margin-top:3px}
+.up{background:#E6F9F0;color:#1A8A56}.dn{background:#FEF0F0;color:var(--r)}.fl{background:#EFF3FB;color:var(--b)}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0}
+.cb{background:var(--w);border-radius:5px;padding:12px;box-shadow:0 1px 5px rgba(0,32,91,.08);display:flex;flex-direction:column;flex:1;min-height:0}
+.cb svg{flex:1;display:block;width:100%;height:100%}
+.cl{font-size:.72rem;font-weight:700;color:var(--n);margin-bottom:7px;flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+thead tr{background:var(--n);color:var(--w)}
+thead th{padding:7px 9px;text-align:left;font-weight:600}
+tbody tr:nth-child(even){background:var(--m)}
+tbody td{padding:6px 9px;color:var(--t);border-bottom:1px solid var(--m)}
+.tg{display:inline-block;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:20px}
+.td{background:#D4F5E5;color:#1A8A56}.tw{background:#FFF3CD;color:#936A00}
+.tr{background:#E2EAFD;color:#1D4ED8}.tb{background:#FDE8E8;color:#C0392B}.tp{background:#F0F0F0;color:#555}
+.rr{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.rl{width:124px;font-size:.7rem;font-weight:600;color:var(--n);flex-shrink:0}
+.rt{flex:1;height:24px;background:var(--m);border-radius:3px;position:relative}
+.rb{position:absolute;top:0;bottom:0;border-radius:3px;display:flex;align-items:center;padding:0 6px;font-size:.62rem;font-weight:700;color:var(--w);white-space:nowrap}
+.rb.gn{background:var(--g)}.rb.sk{background:var(--s)}.rb.pl{background:var(--b);opacity:.5}
+.ql{display:flex;margin-left:133px;margin-bottom:2px}
+.ql span{flex:1;font-size:.6rem;font-weight:700;color:var(--u);letter-spacing:1px}
+.al{list-style:none;display:flex;flex-direction:column;gap:7px}
+.al li{display:flex;align-items:center;gap:11px;background:var(--w);border-radius:5px;padding:9px 13px;font-size:.8rem;color:var(--t);font-weight:500;box-shadow:0 1px 4px rgba(0,32,91,.06)}
+.an{width:24px;height:24px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.68rem;color:var(--n);flex-shrink:0}
+.sp{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.pi{background:var(--w);border:1.5px solid var(--m);border-radius:5px;padding:7px 11px}
+.pl2{font-size:.58rem;font-weight:700;color:var(--u);text-transform:uppercase;letter-spacing:1px}
+.pv{font-size:1rem;font-weight:800;color:var(--n);margin-top:1px}
+.rhi{background:#FEF0F0;border-left:4px solid var(--r);border-radius:4px;padding:8px 11px;margin-bottom:6px}
+.rmi{background:#FFF7E6;border-left:4px solid var(--a);border-radius:4px;padding:8px 11px;margin-bottom:6px}
+.ni{background:var(--w);border-left:4px solid var(--s);border-radius:4px;padding:8px 11px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,32,91,.06)}
+.ni.gn{border-color:var(--g)}
+.ri-t{font-size:.68rem;font-weight:700}
+.ri-b{font-size:.64rem;color:var(--t);margin-top:2px}
+.ni-t{font-size:.68rem;font-weight:700;color:var(--b)}
+#s1{background:linear-gradient(135deg,var(--n) 0%,#001840 60%,#0A2460 100%);justify-content:center;align-items:flex-start;padding:58px 78px}
+.dc1{position:absolute;right:-80px;top:-80px;width:450px;height:450px;border-radius:50%;border:68px solid rgba(245,168,0,.07)}
+.dc2{position:absolute;right:78px;bottom:-110px;width:290px;height:290px;border-radius:50%;border:52px solid rgba(0,130,202,.1)}
+.logo-tl{position:absolute;top:26px;right:36px;display:flex;align-items:center;gap:8px}
+.lm-lg{width:42px;height:42px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.95rem;color:var(--n)}
+.lt-lg{color:rgba(255,255,255,.72);font-size:.68rem;font-weight:600;letter-spacing:1.5px;line-height:1.3}
+#s1 .pt{font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--a);margin-bottom:11px}
+#s1 h1{font-size:2.5rem;font-weight:900;color:var(--w);line-height:1.1;max-width:640px;margin-bottom:14px}
+#s1 .su{font-size:.95rem;color:rgba(255,255,255,.62);margin-bottom:28px}
+.aln{width:54px;height:5px;background:var(--a);border-radius:3px;margin-bottom:18px}
+#s1 .me{display:flex;gap:24px;margin-bottom:32px}
+#s1 .mi .ml{font-size:.59rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a)}
+#s1 .mi .mv{font-size:.82rem;color:var(--w);margin-top:2px;font-weight:500}
+.s1nav{position:absolute;bottom:18px;right:34px}
+.s1nav .fb{font-size:.75rem;padding:6px 16px}
+#s10{background:linear-gradient(150deg,var(--n),#002878,var(--b));flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.qa-ic{width:68px;height:68px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:var(--n);font-weight:900;margin:0 auto 18px}
+#s10 h2{font-size:2.4rem;font-weight:900;color:var(--w);margin-bottom:9px}
+#s10 p{font-size:.95rem;color:rgba(255,255,255,.58);max-width:460px;margin-bottom:24px}
+.cts{display:flex;gap:26px;justify-content:center;margin-bottom:26px}
+.cts .cl2{font-size:.59rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a)}
+.cts .cv{font-size:.82rem;color:rgba(255,255,255,.78);margin-top:3px}
+.cts .cs{font-size:.67rem;color:rgba(255,255,255,.42)}
+.cts .sep{width:1px;background:rgba(255,255,255,.15)}
+.s10nav .fb{font-size:.75rem;padding:6px 16px}
+</style>
 </head>
 <body>
-
 <div id="stage">
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 1 – TITLE
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide active" id="slide-1">
-    <div class="deco-circle"></div>
-    <div class="deco-circle-2"></div>
-    <div class="logo-title">
-      <div class="logo-mark-lg">LHT</div>
-      <div class="logo-text-lg">LUFTHANSA<br>TECHNIK</div>
-    </div>
-    <div class="amber-line"></div>
-    <div class="pretitle">Product Review &amp; Sprint Report</div>
-    <h1>MyApp –<br>Q2 2026 Review</h1>
-    <div class="subtitle">Status, Metriken &amp; Roadmap für das Management</div>
-    <div class="meta">
-      <div class="meta-item">
-        <div class="meta-label">Datum</div>
-        <div class="meta-value">19. Juni 2026</div>
-      </div>
-      <div class="meta-item">
-        <div class="meta-label">Product Owner</div>
-        <div class="meta-value">Max Mustermann</div>
-      </div>
-      <div class="meta-item">
-        <div class="meta-label">Version</div>
-        <div class="meta-value">v2.4</div>
-      </div>
-      <div class="meta-item">
-        <div class="meta-label">Team</div>
-        <div class="meta-value">MRO Digital Solutions</div>
-      </div>
-    </div>
-  </section>
+<!-- SLIDE 1 -->
+<section class="slide" id="s1">
+  <div class="dc1"></div><div class="dc2"></div>
+  <div class="logo-tl"><div class="lm-lg">LHT</div><div class="lt-lg">LUFTHANSA<br>TECHNIK</div></div>
+  <div class="aln"></div>
+  <div class="pt">Product Review &amp; Sprint Report</div>
+  <h1>MyApp – Q2 2026 Review</h1>
+  <div class="su">Status, Metriken &amp; Roadmap für das Management</div>
+  <div class="me">
+    <div class="mi"><div class="ml">Datum</div><div class="mv">19. Juni 2026</div></div>
+    <div class="mi"><div class="ml">Product Owner</div><div class="mv">Max Mustermann</div></div>
+    <div class="mi"><div class="ml">Version</div><div class="mv">v2.4</div></div>
+    <div class="mi"><div class="ml">Team</div><div class="mv">MRO Digital Solutions</div></div>
+  </div>
+  <div class="s1nav"><a href="#s2" class="fb">Weiter →</a></div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 2 – AGENDA
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-2">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Agenda</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
-    </div>
-    <div class="slide-body">
-      <ul class="agenda-list">
-        <li><div class="agenda-num">01</div>Executive Summary – KPIs auf einen Blick</li>
-        <li><div class="agenda-num">02</div>Sprint Burndown &amp; Team Velocity</li>
-        <li><div class="agenda-num">03</div>Feature Completion &amp; Release-Fortschritt</li>
-        <li><div class="agenda-num">04</div>User Story Backlog – Status-Übersicht</li>
-        <li><div class="agenda-num">05</div>Produkt-Roadmap Q2–Q4 2026</li>
-        <li><div class="agenda-num">06</div>Risiken, Abhängigkeiten &amp; Nächste Schritte</li>
-        <li><div class="agenda-num">07</div>Q &amp; A</li>
-      </ul>
-    </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>MRO Digital Solutions · MyApp</span>
-    </div>
-  </section>
+<!-- SLIDE 2 – AGENDA -->
+<section class="slide" id="s2">
+  <div class="ab"></div>
+  <div class="hd"><h2>Agenda</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <ul class="al">
+      <li><div class="an">01</div>Executive Summary – KPIs auf einen Blick</li>
+      <li><div class="an">02</div>Sprint Burndown &amp; Team Velocity</li>
+      <li><div class="an">03</div>Feature Completion &amp; Release-Fortschritt</li>
+      <li><div class="an">04</div>User Story Backlog – Status-Übersicht</li>
+      <li><div class="an">05</div>Produkt-Roadmap Q2–Q4 2026</li>
+      <li><div class="an">06</div>Risiken, Abhängigkeiten &amp; Nächste Schritte</li>
+      <li><div class="an">07</div>Q &amp; A</li>
+    </ul>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s1" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">2/10</span><a href="#s3" class="fb">Weiter →</a></div>
+    <span>MRO Digital Solutions</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 3 – KPI DASHBOARD
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-3">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Executive Summary – KPIs auf einen Blick</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
+<!-- SLIDE 3 – KPI DASHBOARD -->
+<section class="slide" id="s3">
+  <div class="ab"></div>
+  <div class="hd"><h2>Executive Summary – KPIs auf einen Blick</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div class="kg">
+      <div class="kc"><div class="ct">Story Points geliefert</div><div class="bn">142</div><div class="dl up">▲ +18 vs. S11</div></div>
+      <div class="kc b"><div class="ct">Active Users (MAU)</div><div class="bn">2 847</div><div class="dl up">▲ +12 %</div></div>
+      <div class="kc s"><div class="ct">Ø Page Load Time</div><div class="bn">1.4 s</div><div class="dl dn">▼ −0.3 s</div></div>
+      <div class="kc g"><div class="ct">Bug-Backlog</div><div class="bn">7</div><div class="dl fl">3 P1 · 4 P2</div></div>
     </div>
-    <div class="slide-body">
-      <div class="kpi-grid" style="margin-bottom:16px">
-        <div class="kpi-card">
-          <div class="card-title">Story Points geliefert</div>
-          <div class="big-number">142</div>
-          <div class="delta up">▲ +18 vs. Sprint 11</div>
-        </div>
-        <div class="kpi-card blue">
-          <div class="card-title">Active Users (MAU)</div>
-          <div class="big-number">2 847</div>
-          <div class="delta up">▲ +12 %</div>
-        </div>
-        <div class="kpi-card sky">
-          <div class="card-title">Ø Page Load Time</div>
-          <div class="big-number">1.4 s</div>
-          <div class="delta down">▼ −0.3 s</div>
-        </div>
-        <div class="kpi-card green">
-          <div class="card-title">Bug-Backlog</div>
-          <div class="big-number">7</div>
-          <div class="delta flat">→ 3 P1 · 4 P2</div>
-        </div>
+    <div class="tc">
+      <div class="cb">
+        <div class="cl">Ø Deployment Frequency (pro Woche)</div>
+        <svg viewBox="0 0 380 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="28" y1="10" x2="28" y2="100" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="28" y1="100" x2="375" y2="100" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="28" y1="77" x2="375" y2="77" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="28" y1="55" x2="375" y2="55" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="28" y1="32" x2="375" y2="32" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <text x="24" y="103" text-anchor="end" font-size="8" fill="#6B7A8D">0</text>
+          <text x="24" y="80"  text-anchor="end" font-size="8" fill="#6B7A8D">1</text>
+          <text x="24" y="58"  text-anchor="end" font-size="8" fill="#6B7A8D">2</text>
+          <text x="24" y="35"  text-anchor="end" font-size="8" fill="#6B7A8D">3</text>
+          <rect x="34"  y="53" width="38" height="47" fill="#0082CA" rx="2"/>
+          <rect x="92"  y="46" width="38" height="54" fill="#0082CA" rx="2"/>
+          <rect x="150" y="59" width="38" height="41" fill="#0082CA" rx="2"/>
+          <rect x="208" y="33" width="38" height="67" fill="#0082CA" rx="2"/>
+          <rect x="266" y="40" width="38" height="60" fill="#0082CA" rx="2"/>
+          <rect x="324" y="21" width="38" height="79" fill="#F5A800" rx="2"/>
+          <text x="53"  y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jan</text>
+          <text x="111" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Feb</text>
+          <text x="169" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mär</text>
+          <text x="227" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Apr</text>
+          <text x="285" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mai</text>
+          <text x="343" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jun</text>
+        </svg>
       </div>
-      <div class="two-col" style="gap:16px">
-        <div class="chart-wrap">
-          <div class="chart-title">Ø Deployment Frequency (pro Woche)</div>
-          <canvas id="chartDeployFreq"></canvas>
-        </div>
-        <div class="chart-wrap">
-          <div class="chart-title">System Verfügbarkeit (%)</div>
-          <canvas id="chartUptime"></canvas>
-        </div>
+      <div class="cb">
+        <div class="cl">System-Verfügbarkeit (%)</div>
+        <svg viewBox="0 0 380 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="38" y1="10" x2="38" y2="100" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="38" y1="100" x2="375" y2="100" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="38" y1="70" x2="375" y2="70" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="38" y1="40" x2="375" y2="40" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <text x="34" y="103" text-anchor="end" font-size="7" fill="#6B7A8D">98.5</text>
+          <text x="34" y="73"  text-anchor="end" font-size="7" fill="#6B7A8D">99.5</text>
+          <text x="34" y="13"  text-anchor="end" font-size="7" fill="#6B7A8D">100</text>
+          <polygon points="50,34 110,22 190,58 250,16 320,22 370,19 370,100 50,100" fill="rgba(29,184,126,.12)"/>
+          <polyline points="50,34 110,22 190,58 250,16 320,22 370,19" fill="none" stroke="#1DB87E" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="50"  cy="34" r="3.5" fill="#1DB87E"/>
+          <circle cx="110" cy="22" r="3.5" fill="#1DB87E"/>
+          <circle cx="190" cy="58" r="3.5" fill="#1DB87E"/>
+          <circle cx="250" cy="16" r="3.5" fill="#1DB87E"/>
+          <circle cx="320" cy="22" r="3.5" fill="#1DB87E"/>
+          <circle cx="370" cy="19" r="3.5" fill="#1DB87E"/>
+          <text x="50"  y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jan</text>
+          <text x="110" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Feb</text>
+          <text x="190" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mär</text>
+          <text x="250" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Apr</text>
+          <text x="320" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Mai</text>
+          <text x="370" y="111" text-anchor="middle" font-size="8" fill="#6B7A8D">Jun</text>
+        </svg>
       </div>
     </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Sprint 12 · Juni 2026</span>
-    </div>
-  </section>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s2" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">3/10</span><a href="#s4" class="fb">Weiter →</a></div>
+    <span>Sprint 12 · Juni 2026</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 4 – SPRINT BURNDOWN (LINE CHART)
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-4">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Sprint Burndown – Sprint 12</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
+<!-- SLIDE 4 – BURNDOWN -->
+<section class="slide" id="s4">
+  <div class="ab"></div>
+  <div class="hd"><h2>Sprint Burndown – Sprint 12</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div class="sp">
+      <div class="pi"><div class="pl2">Sprint</div><div class="pv">#12</div></div>
+      <div class="pi"><div class="pl2">Start</div><div class="pv">02.06.</div></div>
+      <div class="pi"><div class="pl2">Ende</div><div class="pv">13.06.</div></div>
+      <div class="pi"><div class="pl2">Capacity</div><div class="pv">160 SP</div></div>
+      <div class="pi"><div class="pl2">Committed</div><div class="pv">150 SP</div></div>
+      <div class="pi"><div class="pl2">Delivered</div><div class="pv" style="color:#1DB87E">142 SP</div></div>
     </div>
-    <div class="slide-body">
-      <div class="sprint-pills">
-        <div class="pill"><div class="pill-label">Sprint</div><div class="pill-value">#12</div></div>
-        <div class="pill"><div class="pill-label">Start</div><div class="pill-value">02.06.</div></div>
-        <div class="pill"><div class="pill-label">Ende</div><div class="pill-value">13.06.</div></div>
-        <div class="pill"><div class="pill-label">Capacity</div><div class="pill-value">160 SP</div></div>
-        <div class="pill"><div class="pill-label">Committed</div><div class="pill-value">150 SP</div></div>
-        <div class="pill"><div class="pill-label">Delivered</div><div class="pill-value" style="color:#1DB87E">142 SP</div></div>
-      </div>
-      <div class="chart-wrap" style="margin-top:14px;flex:1">
-        <div class="chart-title">Remaining Story Points über Sprint-Tage</div>
-        <canvas id="chartBurndown"></canvas>
-      </div>
+    <div class="cb" style="flex:1">
+      <div class="cl">Remaining Story Points über Sprint-Tage</div>
+      <svg viewBox="0 0 560 155" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="42" y1="10" x2="42" y2="133" stroke="#DDE3EC" stroke-width="1"/>
+        <line x1="42" y1="133" x2="545" y2="133" stroke="#DDE3EC" stroke-width="1"/>
+        <line x1="42" y1="100" x2="545" y2="100" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
+        <line x1="42" y1="67"  x2="545" y2="67"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
+        <line x1="42" y1="34"  x2="545" y2="34"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="4,3"/>
+        <text x="38" y="136" text-anchor="end" font-size="9" fill="#6B7A8D">0</text>
+        <text x="38" y="103" text-anchor="end" font-size="9" fill="#6B7A8D">50</text>
+        <text x="38" y="70"  text-anchor="end" font-size="9" fill="#6B7A8D">100</text>
+        <text x="38" y="37"  text-anchor="end" font-size="9" fill="#6B7A8D">150</text>
+        <polyline points="55,10 105,24 155,38 205,52 255,67 305,81 355,95 405,109 455,123 505,133" fill="none" stroke="#DDE3EC" stroke-width="2" stroke-dasharray="6,4"/>
+        <polygon points="55,10 105,12 155,21 205,37 255,52 305,66 355,82 405,100 455,118 505,126 505,133 55,133" fill="rgba(0,130,202,.1)"/>
+        <polyline points="55,10 105,12 155,21 205,37 255,52 305,66 355,82 405,100 455,118 505,126" fill="none" stroke="#0082CA" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="55"  cy="10"  r="3.5" fill="#0082CA"/>
+        <circle cx="105" cy="12"  r="3.5" fill="#0082CA"/>
+        <circle cx="155" cy="21"  r="3.5" fill="#0082CA"/>
+        <circle cx="205" cy="37"  r="3.5" fill="#0082CA"/>
+        <circle cx="255" cy="52"  r="3.5" fill="#0082CA"/>
+        <circle cx="305" cy="66"  r="3.5" fill="#0082CA"/>
+        <circle cx="355" cy="82"  r="3.5" fill="#0082CA"/>
+        <circle cx="405" cy="100" r="3.5" fill="#0082CA"/>
+        <circle cx="455" cy="118" r="3.5" fill="#0082CA"/>
+        <circle cx="505" cy="126" r="3.5" fill="#0082CA"/>
+        <text x="55"  y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T1</text>
+        <text x="105" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T2</text>
+        <text x="155" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T3</text>
+        <text x="205" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T4</text>
+        <text x="255" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T5</text>
+        <text x="305" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T6</text>
+        <text x="355" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T7</text>
+        <text x="405" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T8</text>
+        <text x="455" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T9</text>
+        <text x="505" y="145" text-anchor="middle" font-size="8.5" fill="#6B7A8D">T10</text>
+        <line x1="60" y1="152" x2="80" y2="152" stroke="#DDE3EC" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="83" y="155" font-size="8" fill="#6B7A8D">Ideal</text>
+        <line x1="120" y1="152" x2="140" y2="152" stroke="#0082CA" stroke-width="2.5"/>
+        <text x="143" y="155" font-size="8" fill="#6B7A8D">Actual</text>
+      </svg>
     </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Sprint 12 · 02.06. – 13.06.2026</span>
-    </div>
-  </section>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s3" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">4/10</span><a href="#s5" class="fb">Weiter →</a></div>
+    <span>02.06. – 13.06.2026</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 5 – VELOCITY (BAR CHART)
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-5">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Team Velocity – Letzte 8 Sprints</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
-    </div>
-    <div class="slide-body">
-      <div class="two-col">
-        <div class="chart-wrap">
-          <div class="chart-title">Committed vs. Delivered Story Points</div>
-          <canvas id="chartVelocity"></canvas>
+<!-- SLIDE 5 – VELOCITY -->
+<section class="slide" id="s5">
+  <div class="ab"></div>
+  <div class="hd"><h2>Team Velocity – Letzte 8 Sprints</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div class="tc">
+      <div class="cb">
+        <div class="cl">Committed vs. Delivered Story Points</div>
+        <svg viewBox="0 0 480 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="30" y1="10" x2="30" y2="128" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="30" y1="128" x2="475" y2="128" stroke="#DDE3EC" stroke-width="1"/>
+          <line x1="30" y1="95" x2="475" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="30" y1="62" x2="475" y2="62" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <line x1="30" y1="29" x2="475" y2="29" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+          <text x="26" y="131" text-anchor="end" font-size="8" fill="#6B7A8D">0</text>
+          <text x="26" y="98"  text-anchor="end" font-size="8" fill="#6B7A8D">50</text>
+          <text x="26" y="65"  text-anchor="end" font-size="8" fill="#6B7A8D">100</text>
+          <text x="26" y="32"  text-anchor="end" font-size="8" fill="#6B7A8D">150</text>
+          <rect x="34"  y="32" width="20" height="96" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="56"  y="41" width="20" height="87" fill="#004F9F" rx="2"/>
+          <rect x="89"  y="35" width="20" height="93" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="111" y="37" width="20" height="91" fill="#004F9F" rx="2"/>
+          <rect x="144" y="24" width="20" height="104" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="166" y="30" width="20" height="98"  fill="#004F9F" rx="2"/>
+          <rect x="199" y="39" width="20" height="89" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="221" y="43" width="20" height="85" fill="#004F9F" rx="2"/>
+          <rect x="254" y="28" width="20" height="100" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="276" y="32" width="20" height="96"  fill="#004F9F" rx="2"/>
+          <rect x="309" y="21" width="20" height="107" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="331" y="26" width="20" height="102" fill="#004F9F" rx="2"/>
+          <rect x="364" y="36" width="20" height="92" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="386" y="36" width="20" height="92" fill="#004F9F" rx="2"/>
+          <rect x="419" y="17" width="20" height="111" fill="rgba(0,79,159,.35)" rx="2"/>
+          <rect x="441" y="23" width="20" height="105" fill="#004F9F" rx="2"/>
+          <text x="47"  y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S5</text>
+          <text x="102" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S6</text>
+          <text x="157" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S7</text>
+          <text x="212" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S8</text>
+          <text x="267" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S9</text>
+          <text x="322" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S10</text>
+          <text x="377" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S11</text>
+          <text x="432" y="140" text-anchor="middle" font-size="8" fill="#6B7A8D">S12</text>
+          <rect x="34" y="146" width="11" height="7" fill="rgba(0,79,159,.35)" rx="1"/>
+          <text x="49" y="153" font-size="8" fill="#6B7A8D">Committed</text>
+          <rect x="120" y="146" width="11" height="7" fill="#004F9F" rx="1"/>
+          <text x="135" y="153" font-size="8" fill="#6B7A8D">Delivered</text>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div class="cb" style="flex:1">
+          <div class="cl">Velocity-Trend (Ø 3 Sprints)</div>
+          <svg viewBox="0 0 300 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="28" y1="8" x2="28" y2="90" stroke="#DDE3EC" stroke-width="1"/>
+            <line x1="28" y1="90" x2="292" y2="90" stroke="#DDE3EC" stroke-width="1"/>
+            <line x1="28" y1="62" x2="292" y2="62" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+            <line x1="28" y1="34" x2="292" y2="34" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+            <text x="24" y="93" text-anchor="end" font-size="7" fill="#6B7A8D">110</text>
+            <text x="24" y="65" text-anchor="end" font-size="7" fill="#6B7A8D">120</text>
+            <text x="24" y="37" text-anchor="end" font-size="7" fill="#6B7A8D">130</text>
+            <text x="24" y="11" text-anchor="end" font-size="7" fill="#6B7A8D">140</text>
+            <polygon points="102,45 136,47 170,42 204,37 238,28 272,14 272,90 102,90" fill="rgba(245,168,0,.15)"/>
+            <polyline points="102,45 136,47 170,42 204,37 238,28 272,14" fill="none" stroke="#F5A800" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="102" cy="45" r="3" fill="#F5A800"/>
+            <circle cx="136" cy="47" r="3" fill="#F5A800"/>
+            <circle cx="170" cy="42" r="3" fill="#F5A800"/>
+            <circle cx="204" cy="37" r="3" fill="#F5A800"/>
+            <circle cx="238" cy="28" r="3" fill="#F5A800"/>
+            <circle cx="272" cy="14" r="3" fill="#F5A800"/>
+            <text x="34"  y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S5</text>
+            <text x="68"  y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S6</text>
+            <text x="102" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S7</text>
+            <text x="136" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S8</text>
+            <text x="170" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S9</text>
+            <text x="204" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S10</text>
+            <text x="238" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S11</text>
+            <text x="272" y="100" text-anchor="middle" font-size="7" fill="#6B7A8D">S12</text>
+          </svg>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="chart-wrap" style="flex:1">
-            <div class="chart-title">Velocity-Trend (gleitend Ø 3 Sprints)</div>
-            <canvas id="chartVeloTrend"></canvas>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="kpi-card blue" style="padding:12px 14px">
-              <div class="card-title">Ø Velocity</div>
-              <div class="big-number" style="font-size:1.6rem">131</div>
-              <div class="delta flat">SP / Sprint</div>
-            </div>
-            <div class="kpi-card" style="padding:12px 14px">
-              <div class="card-title">Predictability</div>
-              <div class="big-number" style="font-size:1.6rem">94 %</div>
-              <div class="delta up">▲ Ziel: ≥ 90 %</div>
-            </div>
-          </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="kc b" style="padding:11px 13px"><div class="ct">Ø Velocity</div><div class="bn" style="font-size:1.5rem">131</div><div class="dl fl">SP / Sprint</div></div>
+          <div class="kc"   style="padding:11px 13px"><div class="ct">Predictability</div><div class="bn" style="font-size:1.5rem">94 %</div><div class="dl up">▲ Ziel: 90 %</div></div>
         </div>
       </div>
     </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Sprint 5–12 · 2026</span>
-    </div>
-  </section>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s4" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">5/10</span><a href="#s6" class="fb">Weiter →</a></div>
+    <span>Sprint 5–12 · 2026</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 6 – FEATURE COMPLETION (HORIZONTAL BAR)
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-6">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Feature Completion – Release 2.4</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
-    </div>
-    <div class="slide-body">
-      <div class="two-col">
-        <div class="chart-wrap">
-          <div class="chart-title">Fertigstellungsgrad je Epic (%)</div>
-          <canvas id="chartEpicCompletion"></canvas>
-        </div>
-        <div class="chart-wrap">
-          <div class="chart-title">Story-Status-Verteilung</div>
-          <canvas id="chartStoryStatus"></canvas>
-        </div>
+<!-- SLIDE 6 – FEATURE COMPLETION -->
+<section class="slide" id="s6">
+  <div class="ab"></div>
+  <div class="hd"><h2>Feature Completion – Release 2.4</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div class="tc">
+      <div class="cb">
+        <div class="cl">Fertigstellungsgrad je Epic (%)</div>
+        <svg viewBox="0 0 400 170" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="115" y="12"  width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="40"  width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="68"  width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="96"  width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="124" width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="152" width="270" height="22" fill="#DDE3EC" rx="2"/>
+          <rect x="115" y="12"  width="230" height="22" fill="#1DB87E" rx="2"/>
+          <rect x="115" y="40"  width="162" height="22" fill="#0082CA" rx="2"/>
+          <rect x="115" y="68"  width="122" height="22" fill="#004F9F" rx="2"/>
+          <rect x="115" y="96"  width="54"  height="22" fill="#F5A800" rx="2"/>
+          <rect x="115" y="124" width="81"  height="22" fill="#004F9F" rx="2"/>
+          <rect x="115" y="152" width="27"  height="22" fill="#6B7A8D" rx="2"/>
+          <text x="350" y="27"  font-size="9" fill="#fff" font-weight="700">85 %</text>
+          <text x="282" y="55"  font-size="9" fill="#fff" font-weight="700">60 %</text>
+          <text x="242" y="83"  font-size="9" fill="#fff" font-weight="700">45 %</text>
+          <text x="147" y="111" font-size="9" fill="#fff" font-weight="700">20 %</text>
+          <text x="163" y="139" font-size="9" fill="#fff" font-weight="700">30 %</text>
+          <text x="146" y="167" font-size="9" fill="#fff" font-weight="700">10 %</text>
+          <text x="111" y="27"  text-anchor="end" font-size="8.5" fill="#2C3E50">Offline Mode</text>
+          <text x="111" y="55"  text-anchor="end" font-size="8.5" fill="#2C3E50">SSO / IAM</text>
+          <text x="111" y="83"  text-anchor="end" font-size="8.5" fill="#2C3E50">Reporting v2</text>
+          <text x="111" y="111" text-anchor="end" font-size="8.5" fill="#2C3E50">Performance</text>
+          <text x="111" y="139" text-anchor="end" font-size="8.5" fill="#2C3E50">Push Notif.</text>
+          <text x="111" y="167" text-anchor="end" font-size="8.5" fill="#2C3E50">i18n</text>
+        </svg>
+      </div>
+      <div class="cb">
+        <div class="cl">Story-Status-Verteilung</div>
+        <svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="95" cy="85" r="62" fill="none" stroke="#1DB87E" stroke-width="38" stroke-dasharray="148 242" transform="rotate(-90 95 85)"/>
+          <circle cx="95" cy="85" r="62" fill="none" stroke="#0082CA" stroke-width="38" stroke-dasharray="47 343"  transform="rotate(46.8 95 85)"/>
+          <circle cx="95" cy="85" r="62" fill="none" stroke="#004F9F" stroke-width="38" stroke-dasharray="58 332"  transform="rotate(90 95 85)"/>
+          <circle cx="95" cy="85" r="62" fill="none" stroke="#DDE3EC" stroke-width="38" stroke-dasharray="105 285" transform="rotate(144 95 85)"/>
+          <circle cx="95" cy="85" r="62" fill="none" stroke="#D63B3B" stroke-width="38" stroke-dasharray="31 359"  transform="rotate(241.2 95 85)"/>
+          <circle cx="95" cy="85" r="32" fill="#FFFFFF"/>
+          <text x="95" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#00205B">100</text>
+          <text x="95" y="95" text-anchor="middle" font-size="8"  fill="#6B7A8D">Stories</text>
+          <rect x="182" y="28"  width="11" height="11" fill="#1DB87E" rx="2"/>
+          <text x="197" y="38"  font-size="9" fill="#2C3E50">Done (38)</text>
+          <rect x="182" y="48"  width="11" height="11" fill="#0082CA" rx="2"/>
+          <text x="197" y="58"  font-size="9" fill="#2C3E50">In Progress (12)</text>
+          <rect x="182" y="68"  width="11" height="11" fill="#004F9F" rx="2"/>
+          <text x="197" y="78"  font-size="9" fill="#2C3E50">Ready (15)</text>
+          <rect x="182" y="88"  width="11" height="11" fill="#DDE3EC" rx="2"/>
+          <text x="197" y="98"  font-size="9" fill="#2C3E50">Planned (27)</text>
+          <rect x="182" y="108" width="11" height="11" fill="#D63B3B" rx="2"/>
+          <text x="197" y="118" font-size="9" fill="#2C3E50">Blocked (8)</text>
+        </svg>
       </div>
     </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Release 2.4 · Stand 19.06.2026</span>
-    </div>
-  </section>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s5" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">6/10</span><a href="#s7" class="fb">Weiter →</a></div>
+    <span>Release 2.4 · 19.06.2026</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 7 – USER STORY BACKLOG TABLE
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-7">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Top Backlog Items – Sprint 13 Kandidaten</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
-    </div>
-    <div class="slide-body" style="padding-top:20px">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>User Story</th>
-            <th>Epic</th>
-            <th>SP</th>
-            <th>Priorität</th>
-            <th>Status</th>
-            <th>Assignee</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>US-241</td>
-            <td>Als Techniker möchte ich Wartungsaufträge offline bearbeiten können</td>
-            <td>Offline Mode</td>
-            <td>8</td>
-            <td>🔴 Must</td>
-            <td><span class="tag tag-wip">In Progress</span></td>
-            <td>A. Schmidt</td>
-          </tr>
-          <tr>
-            <td>US-238</td>
-            <td>PDF-Export für Compliance Reports</td>
-            <td>Reporting</td>
-            <td>5</td>
-            <td>🔴 Must</td>
-            <td><span class="tag tag-done">Done</span></td>
-            <td>L. Müller</td>
-          </tr>
-          <tr>
-            <td>US-245</td>
-            <td>SSO-Integration mit IAM-Portal</td>
-            <td>Security</td>
-            <td>13</td>
-            <td>🔴 Must</td>
-            <td><span class="tag tag-planned">Ready</span></td>
-            <td>K. Weber</td>
-          </tr>
-          <tr>
-            <td>US-250</td>
-            <td>Push-Notifications für Statusänderungen</td>
-            <td>UX Improve</td>
-            <td>5</td>
-            <td>🟡 Should</td>
-            <td><span class="tag tag-planned">Ready</span></td>
-            <td>J. Bauer</td>
-          </tr>
-          <tr>
-            <td>US-253</td>
-            <td>Performance-Optimierung Suchindex (> 50k Einträge)</td>
-            <td>Performance</td>
-            <td>8</td>
-            <td>🟡 Should</td>
-            <td><span class="tag tag-blocked">Blocked</span></td>
-            <td>T. Richter</td>
-          </tr>
-          <tr>
-            <td>US-257</td>
-            <td>Mehrsprachigkeit: Englisch &amp; Französisch</td>
-            <td>i18n</td>
-            <td>13</td>
-            <td>🟢 Could</td>
-            <td><span class="tag tag-planned">Planned</span></td>
-            <td>–</td>
-          </tr>
-          <tr>
-            <td>US-260</td>
-            <td>Dark Mode für Tablet-Interface</td>
-            <td>UX Improve</td>
-            <td>3</td>
-            <td>🟢 Could</td>
-            <td><span class="tag tag-planned">Planned</span></td>
-            <td>–</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Backlog-Stand: 19.06.2026 · Total: 82 Items</span>
-    </div>
-  </section>
+<!-- SLIDE 7 – BACKLOG TABLE -->
+<section class="slide" id="s7">
+  <div class="ab"></div>
+  <div class="hd"><h2>Top Backlog Items – Sprint 13 Kandidaten</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd" style="padding-top:16px">
+    <table>
+      <thead><tr><th>ID</th><th>User Story</th><th>Epic</th><th>SP</th><th>Prio</th><th>Status</th><th>Assignee</th></tr></thead>
+      <tbody>
+        <tr><td>US-241</td><td>Als Techniker möchte ich Aufträge offline bearbeiten</td><td>Offline Mode</td><td>8</td><td>🔴 Must</td><td><span class="tg tw">In Progress</span></td><td>A. Schmidt</td></tr>
+        <tr><td>US-238</td><td>PDF-Export für Compliance Reports</td><td>Reporting</td><td>5</td><td>🔴 Must</td><td><span class="tg td">Done</span></td><td>L. Müller</td></tr>
+        <tr><td>US-245</td><td>SSO-Integration mit IAM-Portal</td><td>Security</td><td>13</td><td>🔴 Must</td><td><span class="tg tr">Ready</span></td><td>K. Weber</td></tr>
+        <tr><td>US-250</td><td>Push-Notifications für Statusänderungen</td><td>UX Improve</td><td>5</td><td>🟡 Should</td><td><span class="tg tr">Ready</span></td><td>J. Bauer</td></tr>
+        <tr><td>US-253</td><td>Performance-Optimierung Suchindex (&gt;50k Einträge)</td><td>Performance</td><td>8</td><td>🟡 Should</td><td><span class="tg tb">Blocked</span></td><td>T. Richter</td></tr>
+        <tr><td>US-257</td><td>Mehrsprachigkeit: Englisch &amp; Französisch</td><td>i18n</td><td>13</td><td>🟢 Could</td><td><span class="tg tp">Planned</span></td><td>–</td></tr>
+        <tr><td>US-260</td><td>Dark Mode für Tablet-Interface</td><td>UX Improve</td><td>3</td><td>🟢 Could</td><td><span class="tg tp">Planned</span></td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s6" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span></div><span class="cn">7/10</span><a href="#s8" class="fb">Weiter →</a></div>
+    <span>Backlog-Stand 19.06.2026 · 82 Items</span>
+  </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 8 – ROADMAP
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-8">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Produkt-Roadmap 2026</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
+<!-- SLIDE 8 – ROADMAP -->
+<section class="slide" id="s8">
+  <div class="ab"></div>
+  <div class="hd"><h2>Produkt-Roadmap 2026</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div class="ql"><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div>
+    <div class="rr"><div class="rl">Offline Modus</div><div class="rt"><div class="rb gn" style="left:0;width:30%">✓ Erledigt</div></div></div>
+    <div class="rr"><div class="rl">SSO / IAM</div><div class="rt"><div class="rb gn" style="left:15%;width:20%">✓ Done</div><div class="rb sk" style="left:35%;width:15%">Rollout</div></div></div>
+    <div class="rr"><div class="rl">Reporting v2</div><div class="rt"><div class="rb sk" style="left:25%;width:25%">In Arbeit</div></div></div>
+    <div class="rr"><div class="rl">Push Notifications</div><div class="rt"><div class="rb pl" style="left:45%;width:20%">Geplant</div></div></div>
+    <div class="rr"><div class="rl">i18n (EN / FR)</div><div class="rt"><div class="rb pl" style="left:50%;width:25%">Geplant</div></div></div>
+    <div class="rr"><div class="rl">Performance 2.0</div><div class="rt"><div class="rb pl" style="left:60%;width:20%">Geplant</div></div></div>
+    <div class="rr"><div class="rl">Mobile App v1</div><div class="rt"><div class="rb pl" style="left:75%;width:25%">Geplant</div></div></div>
+    <div style="display:flex;gap:18px;margin-top:10px">
+      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#1DB87E;border-radius:2px"></div>Erledigt</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#0082CA;border-radius:2px"></div>In Arbeit</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:#6B7A8D"><div style="width:14px;height:8px;background:#004F9F;border-radius:2px;opacity:.5"></div>Geplant</div>
     </div>
-    <div class="slide-body">
-      <div class="quarter-labels">
-        <span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span>
-      </div>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s7" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span></div><span class="cn">8/10</span><a href="#s9" class="fb">Weiter →</a></div>
+    <span>Roadmap · Stand 19.06.2026</span>
+  </div>
+</section>
 
-      <div class="roadmap-row">
-        <div class="roadmap-label">Offline Modus</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-done" style="left:0%;width:30%">✓ Erledigt</div>
-        </div>
+<!-- SLIDE 9 – RISKS -->
+<section class="slide" id="s9">
+  <div class="ab"></div>
+  <div class="hd"><h2>Risiken &amp; Nächste Schritte</h2><div class="logo"><div class="lm">LHT</div><div class="lt">LUFTHANSA TECHNIK</div></div></div>
+  <div class="bd">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:11px">
+      <div>
+        <div style="font-size:.64rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#004F9F;margin-bottom:7px">Risiken</div>
+        <div class="rhi"><div class="ri-t" style="color:#C0392B">🔴 Hoch · US-253 Blocker</div><div class="ri-b">Suchindex-Migration blockiert durch fehlendes DB-Maintenance-Fenster.</div></div>
+        <div class="rmi"><div class="ri-t" style="color:#936A00">🟡 Mittel · Kapazität Q3</div><div class="ri-b">3 Teammitglieder ab Juli in Parallelprojekt. Sprint-Capacity ≈ 110 SP.</div></div>
+        <div class="rmi"><div class="ri-t" style="color:#936A00">🟡 Mittel · API-Abhängigkeit</div><div class="ri-b">IAM-API v3 Breakchange angekündigt. Adapter-Story muss vorgezogen werden.</div></div>
       </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">SSO / IAM</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-done" style="left:15%;width:20%">✓ Done</div>
-          <div class="roadmap-bar bar-active" style="left:35%;width:15%">Rollout</div>
-        </div>
+      <div>
+        <div style="font-size:.64rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#004F9F;margin-bottom:7px">Nächste Schritte</div>
+        <div class="ni"><div class="ni-t">Sprint 13 Planning · 23.06.</div><div class="ri-b">Backlog Refinement abgeschlossen, 8 Stories ready. Kapazität: 155 SP.</div></div>
+        <div class="ni"><div class="ni-t">IT-Ops Eskalation · 20.06.</div><div class="ri-b">Maintenance-Fenster für DB-Migration anfragen (US-253 Blocker).</div></div>
+        <div class="ni gn"><div class="ni-t" style="color:#1DB87E">Release 2.4 · 04.07.</div><div class="ri-b">Deployment nach UAT (Gate: 0 P1-Bugs).</div></div>
       </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">Reporting v2</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-active" style="left:25%;width:25%">In Arbeit</div>
-        </div>
-      </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">Push Notifications</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-planned" style="left:45%;width:20%">Geplant</div>
-        </div>
-      </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">i18n (EN / FR)</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-planned" style="left:50%;width:25%">Geplant</div>
-        </div>
-      </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">Performance 2.0</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-planned" style="left:60%;width:20%">Geplant</div>
-        </div>
-      </div>
-      <div class="roadmap-row">
-        <div class="roadmap-label">Mobile App v1</div>
-        <div class="roadmap-track">
-          <div class="roadmap-bar bar-planned" style="left:75%;width:25%">Geplant</div>
-        </div>
-      </div>
+    </div>
+    <div class="cb" style="flex:1">
+      <div class="cl">Risiko-Matrix (Eintrittswahrscheinlichkeit × Auswirkung)</div>
+      <svg viewBox="0 0 500 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="10"  x2="50"  y2="95" stroke="#DDE3EC" stroke-width="1"/>
+        <line x1="50" y1="95"  x2="455" y2="95" stroke="#DDE3EC" stroke-width="1"/>
+        <line x1="130" y1="10" x2="130" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="210" y1="10" x2="210" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="290" y1="10" x2="290" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="370" y1="10" x2="370" y2="95" stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="50" y1="78"  x2="455" y2="78"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="50" y1="61"  x2="455" y2="61"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="50" y1="44"  x2="455" y2="44"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <line x1="50" y1="27"  x2="455" y2="27"  stroke="#DDE3EC" stroke-width=".5" stroke-dasharray="3,3"/>
+        <text x="130" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">1</text>
+        <text x="210" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">2</text>
+        <text x="290" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">3</text>
+        <text x="370" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">4</text>
+        <text x="450" y="103" text-anchor="middle" font-size="7.5" fill="#6B7A8D">5</text>
+        <text x="46" y="80"  text-anchor="end" font-size="7.5" fill="#6B7A8D">1</text>
+        <text x="46" y="63"  text-anchor="end" font-size="7.5" fill="#6B7A8D">2</text>
+        <text x="46" y="46"  text-anchor="end" font-size="7.5" fill="#6B7A8D">3</text>
+        <text x="46" y="29"  text-anchor="end" font-size="7.5" fill="#6B7A8D">4</text>
+        <text x="46" y="12"  text-anchor="end" font-size="7.5" fill="#6B7A8D">5</text>
+        <circle cx="370" cy="27" r="10" fill="rgba(214,59,59,.75)"/>
+        <text x="370" y="31" text-anchor="middle" font-size="7" fill="#fff">DB</text>
+        <circle cx="290" cy="44"  r="8"  fill="rgba(245,168,0,.85)"/>
+        <circle cx="290" cy="27"  r="7"  fill="rgba(245,168,0,.85)"/>
+        <circle cx="210" cy="61"  r="5"  fill="rgba(0,79,159,.7)"/>
+        <circle cx="210" cy="44"  r="6"  fill="rgba(0,79,159,.7)"/>
+        <circle cx="130" cy="61"  r="4"  fill="rgba(29,184,126,.8)"/>
+        <text x="470" y="20" font-size="7.5" fill="#6B7A8D">● Hoch</text>
+        <circle cx="462" cy="17" r="5" fill="rgba(214,59,59,.75)"/>
+        <text x="470" y="35" font-size="7.5" fill="#6B7A8D">● Mittel</text>
+        <circle cx="462" cy="32" r="4" fill="rgba(245,168,0,.85)"/>
+        <text x="470" y="50" font-size="7.5" fill="#6B7A8D">● Niedrig</text>
+        <circle cx="462" cy="47" r="3" fill="rgba(0,79,159,.7)"/>
+      </svg>
+    </div>
+  </div>
+  <div class="ft">
+    <span>Lufthansa Technik AG · Confidential</span>
+    <div class="fn"><a href="#s8" class="fb">← Zurück</a><div class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span></div><span class="cn">9/10</span><a href="#s10" class="fb">Weiter →</a></div>
+    <span>Stand 19.06.2026</span>
+  </div>
+</section>
 
-      <div style="display:flex;gap:20px;margin-top:14px;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--lht-muted)">
-          <div style="width:16px;height:10px;background:#1DB87E;border-radius:2px"></div> Erledigt
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--lht-muted)">
-          <div style="width:16px;height:10px;background:var(--lht-sky);border-radius:2px"></div> In Arbeit
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--lht-muted)">
-          <div style="width:16px;height:10px;background:var(--lht-blue);opacity:.55;border-radius:2px"></div> Geplant
-        </div>
-      </div>
-    </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Roadmap – Stand: 19.06.2026</span>
-    </div>
-  </section>
+<!-- SLIDE 10 – Q&A -->
+<section class="slide" id="s10">
+  <div class="qa-ic">?</div>
+  <h2>Fragen &amp; Diskussion</h2>
+  <p>Vielen Dank für Ihre Aufmerksamkeit.<br>Wir freuen uns über Feedback und Fragen.</p>
+  <div class="cts">
+    <div><div class="cl2">Product Owner</div><div class="cv">Max Mustermann</div><div class="cs">max.mustermann@lhtech.com</div></div>
+    <div class="sep"></div>
+    <div><div class="cl2">Nächster Review</div><div class="cv">14. Juli 2026</div><div class="cs">Sprint 13 · MRO Digital</div></div>
+  </div>
+  <div class="s10nav"><a href="#s9" class="fb">← Zurück</a></div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 9 – RISKS & NEXT STEPS
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-9">
-    <div class="accent-bar"></div>
-    <div class="slide-header">
-      <h2>Risiken &amp; Nächste Schritte</h2>
-      <div class="logo-area"><div class="logo-mark">LHT</div><div class="logo-text">LUFTHANSA TECHNIK</div></div>
-    </div>
-    <div class="slide-body">
-      <div class="two-col" style="flex:0 0 auto;margin-bottom:14px">
-        <div>
-          <div class="section-title" style="margin-bottom:10px">Risiken</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div style="background:#FEF0F0;border-left:4px solid #D63B3B;border-radius:4px;padding:10px 14px">
-              <div style="font-size:.78rem;font-weight:700;color:#C0392B">🔴 Hoch · US-253 Blocker</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">Suchindex-Migration blockiert durch fehlendes DB-Maintenance-Fenster. Eskalation zu IT-Ops erforderlich.</div>
-            </div>
-            <div style="background:#FFF7E6;border-left:4px solid var(--lht-amber);border-radius:4px;padding:10px 14px">
-              <div style="font-size:.78rem;font-weight:700;color:#936A00">🟡 Mittel · Kapazität Q3</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">3 Team-Mitglieder ab Juli in paralleles Projekt eingeplant. Sprint Capacity sinkt auf ~110 SP.</div>
-            </div>
-            <div style="background:#FFF7E6;border-left:4px solid var(--lht-amber);border-radius:4px;padding:10px 14px">
-              <div style="font-size:.78rem;font-weight:700;color:#936A00">🟡 Mittel · API-Abhängigkeit</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">IAM-API v3 Breakchange angekündigt. Adapter-Story muss vorgezogen werden.</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="section-title" style="margin-bottom:10px">Nächste Schritte</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div style="background:var(--lht-white);border-left:4px solid var(--lht-sky);border-radius:4px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,32,91,.06)">
-              <div style="font-size:.78rem;font-weight:700;color:var(--lht-blue)">Sprint 13 Planning · 23.06.</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">Backlog Refinement abgeschlossen, 8 User Stories ready. Kapazität: 155 SP.</div>
-            </div>
-            <div style="background:var(--lht-white);border-left:4px solid var(--lht-sky);border-radius:4px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,32,91,.06)">
-              <div style="font-size:.78rem;font-weight:700;color:var(--lht-blue)">IT-Ops Eskalation · 20.06.</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">Maintenance-Fenster für DB-Migration anfragen (US-253 Blocker).</div>
-            </div>
-            <div style="background:var(--lht-white);border-left:4px solid var(--lht-sky);border-radius:4px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,32,91,.06)">
-              <div style="font-size:.78rem;font-weight:700;color:var(--lht-blue)">Stakeholder Demo · 25.06.</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">Offline-Modus und neues Reporting-Dashboard live präsentieren.</div>
-            </div>
-            <div style="background:var(--lht-white);border-left:4px solid #1DB87E;border-radius:4px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,32,91,.06)">
-              <div style="font-size:.78rem;font-weight:700;color:#1A8A56">Release 2.4 · 04.07.</div>
-              <div style="font-size:.75rem;color:var(--lht-text);margin-top:3px">Produktives Deployment nach erfolgreichem UAT (Gate: 0 P1-Bugs).</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="chart-wrap" style="flex:1">
-        <div class="chart-title">Risiko-Matrix (Eintrittswahrscheinlichkeit × Auswirkung)</div>
-        <canvas id="chartRisk"></canvas>
-      </div>
-    </div>
-    <div class="slide-footer">
-      <span>Lufthansa Technik AG · Confidential</span><span>Stand: 19.06.2026</span>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       SLIDE 10 – CLOSING / Q&A
-  ═══════════════════════════════════════════════════════════════ -->
-  <section class="slide" id="slide-10">
-    <div class="qa-icon">?</div>
-    <h2>Fragen &amp; Diskussion</h2>
-    <p style="margin-bottom:32px">Vielen Dank für Ihre Aufmerksamkeit.<br>Wir freuen uns über Feedback und Fragen.</p>
-    <div style="display:flex;gap:32px;justify-content:center">
-      <div style="text-align:center">
-        <div style="font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--lht-amber)">Product Owner</div>
-        <div style="font-size:.9rem;color:rgba(255,255,255,.8);margin-top:4px">Max Mustermann</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.5)">max.mustermann@lhtech.com</div>
-      </div>
-      <div style="width:1px;background:rgba(255,255,255,.15)"></div>
-      <div style="text-align:center">
-        <div style="font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--lht-amber)">Nächster Review</div>
-        <div style="font-size:.9rem;color:rgba(255,255,255,.8);margin-top:4px">14. Juli 2026</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.5)">Sprint 13 · MRO Digital</div>
-      </div>
-    </div>
-  </section>
-
-</div><!-- /stage -->
-
-<!-- ── Navigation ────────────────────────────────────────────── -->
-<div id="nav">
-  <button class="nav-btn" id="btnPrev">← Zurück</button>
-  <div id="dots"></div>
-  <span id="slide-counter">1 / 10</span>
-  <button class="nav-btn" id="btnNext">Weiter →</button>
 </div>
-
-<!-- ── Charts & Navigation JS ────────────────────────────────── -->
 <script>
-/* ══ 1. NAVIGATION — no Chart.js dependency ══ */
-const SLIDES  = document.querySelectorAll('.slide');
-const TOTAL   = SLIDES.length;
-const dotsEl  = document.getElementById('dots');
-const btnPrev = document.getElementById('btnPrev');
-const btnNext = document.getElementById('btnNext');
-const counter = document.getElementById('slide-counter');
-let current   = 0;
-let chartsInit = {};
-
-for (let i = 0; i < TOTAL; i++) {
-  const d = document.createElement('div');
-  d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.addEventListener('click', (function(n){ return function(){ goTo(n); }; })(i));
-  dotsEl.appendChild(d);
-}
-
-function goTo(idx) {
-  SLIDES[current].classList.remove('active');
-  dotsEl.children[current].classList.remove('active');
-  current = Math.max(0, Math.min(TOTAL - 1, idx));
-  SLIDES[current].classList.add('active');
-  dotsEl.children[current].classList.add('active');
-  counter.textContent = (current + 1) + ' / ' + TOTAL;
-  btnPrev.disabled = current === 0;
-  btnNext.disabled = current === TOTAL - 1;
-  initCharts(current);
-}
-
-btnPrev.addEventListener('click', function() { goTo(current - 1); });
-btnNext.addEventListener('click', function() { goTo(current + 1); });
-btnPrev.disabled = true;
-
-window.addEventListener('keydown', function(e) {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(current + 1); }
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); goTo(current - 1); }
+var ids=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+window.addEventListener('keydown',function(e){
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft'&&e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
+  e.preventDefault();
+  var h=(location.hash||'#s1').replace('#','');
+  var i=ids.indexOf(h);if(i<0)i=0;
+  if((e.key==='ArrowRight'||e.key==='ArrowDown')&&i<ids.length-1)location.hash=ids[i+1];
+  if((e.key==='ArrowLeft' ||e.key==='ArrowUp')  &&i>0)location.hash=ids[i-1];
 });
-
-/* ══ 2. CHART.JS — guarded; navigation above works even if this fails ══ */
-const C = {
-  navy:  '#00205B', blue:  '#004F9F', sky:   '#0082CA',
-  amber: '#F5A800', green: '#1DB87E', red:   '#D63B3B',
-  mid:   '#DDE3EC', muted: '#6B7A8D', white: '#FFFFFF',
-};
-
-try {
-  Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
-  Chart.defaults.color = C.muted;
-} catch (_) {}
-
-/* ── Chart factories ── */
-function initCharts(idx) {
-  if (chartsInit[idx]) return;
-  chartsInit[idx] = true;
-  try { renderChart(idx); } catch(e) { console.warn('Chart error slide', idx, e); }
-}
-
-function renderChart(idx) {
-  /* Slide 3 – Deploy Frequency & Uptime */
-  if (idx === 2) {
-    new Chart(document.getElementById('chartDeployFreq'), {
-      type: 'bar',
-      data: {
-        labels: ['Jan','Feb','Mär','Apr','Mai','Jun'],
-        datasets: [{ label: 'Deployments/Woche', data: [2.1,2.4,1.8,3.0,2.7,3.5],
-          backgroundColor: C.sky, borderRadius: 4 }]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ y:{ beginAtZero:true, grid:{ color:C.mid }, ticks:{ stepSize:1 } }, x:{ grid:{ display:false } } }
-      }
-    });
-    new Chart(document.getElementById('chartUptime'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mär','Apr','Mai','Jun'],
-        datasets: [{ label: 'Verfügbarkeit %', data: [99.6,99.8,99.2,99.9,99.8,99.95],
-          borderColor: C.green, backgroundColor: 'rgba(29,184,126,.12)',
-          borderWidth: 2.5, pointBackgroundColor: C.green, fill: true, tension: .35 }]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ y:{ min:98.5, max:100, grid:{ color:C.mid } }, x:{ grid:{ display:false } } }
-      }
-    });
-  }
-
-  /* Slide 4 – Burndown */
-  if (idx === 3) {
-    var days   = ['Tag 1','Tag 2','Tag 3','Tag 4','Tag 5','Tag 6','Tag 7','Tag 8','Tag 9','Tag 10'];
-    var ideal  = [150,135,120,105,90,75,60,45,30,0];
-    var actual = [150,148,136,118,100,84,65,42,20,8];
-    new Chart(document.getElementById('chartBurndown'), {
-      type: 'line',
-      data: {
-        labels: days,
-        datasets: [
-          { label:'Ideal',  data:ideal,  borderColor:C.mid, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false, tension:0 },
-          { label:'Actual', data:actual, borderColor:C.sky, backgroundColor:'rgba(0,130,202,.1)',
-            borderWidth:2.5, pointBackgroundColor:C.sky, fill:true, tension:.2 }
-        ]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8 } } },
-        scales:{ y:{ beginAtZero:true, title:{ display:true, text:'Remaining SP' }, grid:{ color:C.mid } },
-                 x:{ grid:{ display:false } } }
-      }
-    });
-  }
-
-  /* Slide 5 – Velocity */
-  if (idx === 4) {
-    var sprints = ['S5','S6','S7','S8','S9','S10','S11','S12'];
-    new Chart(document.getElementById('chartVelocity'), {
-      type: 'bar',
-      data: {
-        labels: sprints,
-        datasets: [
-          { label:'Committed', data:[130,125,140,120,135,145,124,150], backgroundColor:'rgba(0,79,159,.35)', borderRadius:3 },
-          { label:'Delivered',  data:[118,123,132,114,129,138,124,142], backgroundColor:C.blue, borderRadius:3 }
-        ]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8 } } },
-        scales:{ y:{ beginAtZero:true, grid:{ color:C.mid } }, x:{ grid:{ display:false } } }
-      }
-    });
-    new Chart(document.getElementById('chartVeloTrend'), {
-      type: 'line',
-      data: {
-        labels: sprints,
-        datasets: [{ label:'Ø 3-Sprint Velocity', data:[null,null,124,123,125,127,130,135],
-          borderColor:C.amber, backgroundColor:'rgba(245,168,0,.15)',
-          borderWidth:2.5, pointBackgroundColor:C.amber, fill:true, tension:.35 }]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ y:{ beginAtZero:false, min:110, grid:{ color:C.mid } }, x:{ grid:{ display:false } } }
-      }
-    });
-  }
-
-  /* Slide 6 – Epic Completion & Story Status */
-  if (idx === 5) {
-    new Chart(document.getElementById('chartEpicCompletion'), {
-      type: 'bar',
-      data: {
-        labels: ['Offline Mode','SSO / IAM','Reporting v2','Performance','Push Notif.','i18n'],
-        datasets: [{ label:'Fertiggestellt (%)', data:[85,60,45,20,30,10],
-          backgroundColor:[C.green,C.sky,C.blue,C.amber,C.blue,C.mid], borderRadius:4 }]
-      },
-      options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ x:{ min:0, max:100, ticks:{ callback:function(v){ return v+'%'; } }, grid:{ color:C.mid } },
-                 y:{ grid:{ display:false } } }
-      }
-    });
-    new Chart(document.getElementById('chartStoryStatus'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Done','In Progress','Ready','Planned','Blocked'],
-        datasets: [{ data:[38,12,15,27,8],
-          backgroundColor:[C.green,C.sky,C.blue,C.mid,C.red],
-          borderWidth:2, borderColor:'#F4F6F9', hoverOffset:6 }]
-      },
-      options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
-        plugins:{ legend:{ position:'right', labels:{ usePointStyle:true, padding:14, boxWidth:10 } } }
-      }
-    });
-  }
-
-  /* Slide 9 – Risk Bubble */
-  if (idx === 8) {
-    new Chart(document.getElementById('chartRisk'), {
-      type: 'bubble',
-      data: {
-        datasets: [
-          { label:'DB-Blocker (US-253)',    data:[{x:4,y:4,r:14}], backgroundColor:'rgba(214,59,59,.75)' },
-          { label:'Kapazität Q3',           data:[{x:3,y:3,r:11}], backgroundColor:'rgba(245,168,0,.75)' },
-          { label:'IAM API Break',          data:[{x:3,y:4,r:10}], backgroundColor:'rgba(245,168,0,.75)' },
-          { label:'Test-Automatisierung',   data:[{x:2,y:2,r:7}],  backgroundColor:'rgba(0,82,202,.65)' },
-          { label:'Scope Creep',            data:[{x:2,y:3,r:8}],  backgroundColor:'rgba(0,82,202,.65)' },
-          { label:'Dokumentation',          data:[{x:1,y:2,r:5}],  backgroundColor:'rgba(29,184,126,.65)' }
-        ]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ position:'right', labels:{ usePointStyle:true, boxWidth:10, padding:10 } } },
-        scales:{
-          x:{ min:0, max:5, title:{ display:true, text:'Eintrittswahrscheinlichkeit →' }, ticks:{ stepSize:1 }, grid:{ color:C.mid } },
-          y:{ min:0, max:5, title:{ display:true, text:'Auswirkung →' }, ticks:{ stepSize:1 }, grid:{ color:C.mid } }
-        }
-      }
-    });
-  }
-}
 </script>
-
 </body>
 </html>
