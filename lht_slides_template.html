@@ -867,10 +867,10 @@
 
 <!-- ── Navigation ────────────────────────────────────────────── -->
 <div id="nav">
-  <button class="nav-btn" id="btnPrev" onclick="navigate(-1)">← Zurück</button>
+  <button class="nav-btn" id="btnPrev" onclick="moveSlide(-1)">← Zurück</button>
   <div id="dots"></div>
   <span id="slide-counter">1 / 10</span>
-  <button class="nav-btn" id="btnNext" onclick="navigate(1)">Weiter →</button>
+  <button class="nav-btn" id="btnNext" onclick="moveSlide(1)">Weiter →</button>
 </div>
 
 <!-- ── Charts & Navigation JS ────────────────────────────────── -->
@@ -918,11 +918,11 @@ function goTo(idx) {
   initCharts(current);
 }
 
-function navigate(dir) { goTo(Math.max(0, Math.min(TOTAL-1, current + dir))); }
+function moveSlide(dir) { goTo(Math.max(0, Math.min(TOTAL-1, current + dir))); }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  navigate(1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    navigate(-1);
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); moveSlide(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); moveSlide(-1); }
 });
 document.getElementById('btnPrev').disabled = true;
 
